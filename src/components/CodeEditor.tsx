@@ -1,3 +1,4 @@
+import { Editor, Monaco } from '@monaco-editor/react'
 import React from 'react'
 
 interface Props {
@@ -6,10 +7,16 @@ interface Props {
 }
 
 const CodeEditor: React.FC<Props> = ( props ) => {
+
   return (
-    <div>
-      
-    </div>
+    <Editor
+      height={'100%'}
+      width={'100%'}
+      theme='vs-dark'
+      defaultLanguage='java'
+      value={props.code}
+      onChange={text => props.setCode(text || '')}
+    />
   )
 }
 
