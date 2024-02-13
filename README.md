@@ -3,7 +3,7 @@
 MC Picker is available here: https://mcpicker.netlify.app
 ## What is MC Picker
 This is an **online code editor** that you can create Minecraft plugins.
-It is a web app powered by [React](https://react.dev/) and [AWS](https://aws.amazon.com/).
+It is a web app built with [React](https://react.dev/) and [AWS](https://aws.amazon.com/).
 
 ## Why I started
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
