@@ -88,7 +88,7 @@ const EditPage = () => {
           {(isBuilding || isGeneratingFiles || isDownloading || isChecking) && <div style={{ width: 30, marginRight: 16 }}>
             <Logo loading />
           </div>}
-          {isChecking ? 'Checking...' : isGeneratingFiles ? 'Generating files...' : isBuilding ? 'Building...' : isDownloading ? 'Downloading...' : ''}
+          {isChecking ? 'Preparing build environment...' : isGeneratingFiles ? 'Generating files...' : isBuilding ? 'Building...' : isDownloading ? 'Downloading...' : ''}
         </div>
         {/* code editor */}
         <div style={{ flex: 1, width: '100%', borderRadius: '.3rem', overflow: 'hidden' }}>
