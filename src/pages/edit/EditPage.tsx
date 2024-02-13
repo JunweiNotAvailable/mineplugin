@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import CodeEditor from '../../components/CodeEditor'
 import './style.css';
 import Logo from '../../asset/Logo';
-import { defaultCode, extractPluginName, insertCommand, pluginYml } from '../../utils/Code';
+import { defaultCode, extractPluginName } from '../../utils/Code';
 import { build, downloadFile, updateSpigotFiles } from '../../utils/CodeBuild';
 import axios from 'axios';
 import { config } from '../../utils/Config';
@@ -29,10 +29,7 @@ const EditPage = () => {
         // remove build id from local storage if completed
         console.log(status);
         // start downloading if built success and just finished building
-        if (status === 'SUCCESS' && isBuilding) {
-          setIsBuilding(false);
-          await download();
-        } else if (status !== 'IN_PROGRESS') {
+        if (status !== 'IN_PROGRESS') {
           localStorage.removeItem('MC-Picker-buildId');
           setIsBuilding(false);
         }
@@ -54,9 +51,7 @@ const EditPage = () => {
     setIsGeneratingFiles(true);
     // store files to s3
     const pluginName = extractPluginName(code) || '';
-    let yml = pluginYml.replaceAll('Plugin', pluginName).replace('Author', 'TestUser');
-    yml = insertCommand(yml, code);
-    await updateSpigotFiles(pluginName, code, yml);
+    await updateSpigotFiles(pluginName, code);
     // build
     const buildId = await build();
     localStorage.setItem('MC-Picker-buildId', buildId);
@@ -68,7 +63,7 @@ const EditPage = () => {
   const download = async () => {
     setIsDownloading(true);
     const pluginName = extractPluginName(code) || '';
-    await downloadFile(`/${pluginName}.jar`, `${pluginName}.jar`);
+    await downloadFile(`${pluginName}.jar`, `${pluginName}.jar`);
     setIsDownloading(false);
   }
 
@@ -83,14 +78,17 @@ const EditPage = () => {
             </div>
             MC Picker
           </div>
-          <button className={`main-button${!(isBuilding || isGeneratingFiles || isDownloading || isChecking) ? ' disabled' : ''}`} style={{ height: 28, padding: '0 16px' }} onClick={generateAndbuild}>Build & Download</button>
+          <div style={{ display: 'flex' }}>
+            <button className={`main-button${(isBuilding || isGeneratingFiles || isDownloading || isChecking) ? ' disabled' : ''}`} disabled={(isBuilding || isGeneratingFiles || isDownloading || isChecking)} style={{ height: 28, padding: '0 16px' }} onClick={generateAndbuild}>Build</button>
+            <button className={`main-button${(isBuilding || isGeneratingFiles || isDownloading || isChecking) ? ' disabled' : ''}`} disabled={(isBuilding || isGeneratingFiles || isDownloading || isChecking)} style={{ height: 28, padding: '0 16px', marginLeft: 16 }} onClick={download}>Download</button>
+          </div>
         </header>
         {/* progress */}
         <div style={{ fontWeight: 600, color: '#aaaa', margin: '8px 0', display: 'flex', alignItems: 'center' }}>
-          {!(isBuilding || isGeneratingFiles || isDownloading || isChecking) && <div style={{ width: 30, marginRight: 16 }}>
+          {(isBuilding || isGeneratingFiles || isDownloading || isChecking) && <div style={{ width: 30, marginRight: 16 }}>
             <Logo loading />
           </div>}
-          {}
+          {isChecking ? 'Checking...' : isGeneratingFiles ? 'Generating files...' : isBuilding ? 'Building...' : isDownloading ? 'Downloading...' : ''}
         </div>
         {/* code editor */}
         <div style={{ flex: 1, width: '100%', borderRadius: '.3rem', overflow: 'hidden' }}>

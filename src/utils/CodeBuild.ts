@@ -1,40 +1,42 @@
 import axios from 'axios';
 import { config } from './Config';
-import { buildspecTemplate } from './Code';
+import { buildspecTemplate, insertCommand, pluginYml } from './Code';
 
 // update java & plugin.yml files before building (compile)
-export const updateSpigotFiles = async (pluginName: string, code: string, yml: string) => {
+export const updateSpigotFiles = async (pluginName: string, code: string) => {
   const builspec = buildspecTemplate.replaceAll('<project>', pluginName);
+  let yml = pluginYml.replaceAll('Plugin', pluginName).replace('Author', 'TestUser');
+  yml = insertCommand(yml, code);
   // buildspec.yml
   await axios.post(`${config.api.s3}/access-file`, {
     bucket: 'mc-picker-bucket',
-    path: `/buildspec.yml`,
+    path: `buildspec.yml`,
     content: builspec,
   });
   // manifest
   await axios.post(`${config.api.s3}/access-file`, {
     bucket: 'mc-picker-bucket',
-    path: `/manifest.txt`,
+    path: `manifest.txt`,
     content: `Main-Class: ${pluginName}`,
   });
   // java code
   await axios.post(`${config.api.s3}/access-file`, {
     bucket: 'mc-picker-bucket',
-    path: `/${pluginName}.java`,
+    path: `${pluginName}.java`,
     content: code,
   });
   // plugin.yml
   await axios.post(`${config.api.s3}/access-file`, {
-    bucket: 'plugin-cake-bucket',
-    path: `/plugin.yml`,
+    bucket: 'mc-picker-bucket',
+    path: `plugin.yml`,
     content: yml,
   });
 }
 
 // Execute AWS CodeBuild with buildspec file
 export const build = async () => {
-  const codeBuildName = '';
-  const buildspecS3Path = `/buildspec.yml`;
+  const codeBuildName = 'MCPickerBuild';
+  const buildspecS3Path = `buildspec.yml`;
   const buildId = (await axios.get(`${config.api.codeBuild}/execute-code-build?codebuild=${codeBuildName}&buildspec=${buildspecS3Path}`)).data.buildId;
   return buildId;
 }
@@ -47,7 +49,7 @@ export const trackBuild = async (buildId: string) => {
 
 // download file from s3
 export const downloadFile = async (path: string, targetFileName: string) => {
-  const data = (await axios.get(`${config.api.s3}/access-file?bucket=plugin-cake-bucket&path=${path}`)).data;
+  const data = (await axios.get(`${config.api.s3}/access-file?bucket=mc-picker-bucket&path=${path}`)).data;
   const { content, contentType } = data;
   saveBufferAsFile(content, targetFileName, contentType);
 

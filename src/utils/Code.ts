@@ -20,8 +20,8 @@ author: Author
 api-version: '1.20'`;
 
 
-export const buildspecTemplate =
-  `version: 0.2
+export const buildspecTemplate = 
+`version: 0.2
 
 phases:
   build:
