@@ -44,7 +44,7 @@ phases:
 
 // Extract plugin name from code string
 export const extractPluginName = (code: string): string | null => {
-  const match = code.match(/public\s+class\s+(\w+)\s+extends\s+JavaPlugin\s*\{/s);
+  const match = code.match(/public\s+class\s+(\w+)\s+extends\s+JavaPlugin\s*(?:implements.+)?\s*\{/s);
   return match ? match[1] : null;
 }
 
