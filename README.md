@@ -8,13 +8,13 @@ It is a web app built with [React](https://react.dev/) and [AWS](https://aws.ama
 ## Why I started
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
 
-So I created this web-based tool build Minecraft plugins **at anywhere**, **in anytime**.
+So I created this web-based tool to build Minecraft plugins **at anywhere**, **in anytime**.
 
 ## How it works
 - **Frontend** - In the frontend, there are only two buttons - **Build** and **Download**, and a code editor
 - **Cloud services**
   - **AWS S3 Bucket** - To store the files (source code, config files...)
-  - **AWS CodeBuild** - Compile the code and generate target files
+  - **AWS CodeBuild** - Compile the code and generate target files **on the cloud**
   - **API Gateway** - Communications between the frontend and the cloud
   - **Lambda** - Cloud functions that attached to REST APIs and access the cloud services (e.g. S3, CodeBuild)
 - **Communication**
