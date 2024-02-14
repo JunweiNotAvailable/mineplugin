@@ -10,7 +10,7 @@ It is a web app built with [React](https://react.dev/) and [AWS](https://aws.ama
 ## Why I started
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
 
-So I created this web-based tool to build Minecraft plugins **anytime**, **anywhere**.
+That is when this web-based tool comes in. For developers to build Minecraft plugins **anytime**, **anywhere**.
 
 ## How it works
 - **Frontend** - In the frontend, there are only two buttons - **Build** and **Download**, and a code editor
