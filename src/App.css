@@ -24,6 +24,7 @@ button {
   border: none;
   border-radius: .3rem;
   background: var(--main-color);
+  text-decoration: none;
 }
 .main-button:hover {
   background: var(--main-color-hover);
