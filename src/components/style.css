@@ -1,0 +1,15 @@
+.navbar {
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  color: var(--main-color);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+}
