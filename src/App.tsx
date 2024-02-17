@@ -30,13 +30,16 @@ function App() {
         <Routes>
           {/* auth routes */}
           <Route path='/login' element={<Login {...appProps} />} />
-          <Route path='/signup' element={<SignUp />} />
+          <Route path='/signup' element={<SignUp {...appProps} />} />
           <Route path='/forgetpassword' element={<ForgetPassword />} />
 
           {/* main routes */}
           <Route path='/' element={user ? <Home {...appProps} /> : <Landing />} /> {/* to home page if user logged in otherwise go to landing page */}
           <Route path='/:username' element={<Profile {...appProps} />} />
-          <Route path='/:username/:plugin_id' element={<Plugin />} />
+          {/* the routes require authenticated user */}
+          {user && <>
+            <Route path='/:username/:plugin_id' element={<Plugin />} />
+          </>}
         </Routes>
       </BrowserRouter>
     </div>

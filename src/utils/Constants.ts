@@ -1,0 +1,1 @@
+export const storageUsername = 'mc-picker-username';
