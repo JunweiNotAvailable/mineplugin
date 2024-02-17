@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CodeEditor from '../../components/CodeEditor'
 import './style.css';
 import Logo from '../../asset/Logo';
@@ -9,7 +9,7 @@ import { config } from '../../utils/Config';
 
 const EditPage = () => {
 
-  let taskId: NodeJS.Timer;
+  let timerRef = useRef<NodeJS.Timer | null>(null);
   const [code, setCode] = useState(defaultCode);
   // status
   const [isChecking, setIsChecking] = useState(true);
@@ -19,7 +19,7 @@ const EditPage = () => {
 
   // check building status every 5 seconds
   useEffect(() => {
-    taskId = setInterval(async () => {
+    timerRef.current = setInterval(async () => {
       const buildId = localStorage.getItem('MC-Picker-buildId');
       // check status if still building
       if (buildId) {
@@ -27,8 +27,6 @@ const EditPage = () => {
         setIsBuilding(true);
         const status = (await axios.get(`${config.api.codeBuild}/track-build?buildId=${buildId}`)).data.status;
         // remove build id from local storage if completed
-        console.log(status);
-        // start downloading if built success and just finished building
         if (status !== 'IN_PROGRESS') {
           localStorage.removeItem('MC-Picker-buildId');
           setIsBuilding(false);
@@ -38,8 +36,13 @@ const EditPage = () => {
         setIsBuilding(false);
       }
       setIsChecking(false);
+      console.log(1)
     }, 5000);
-    return () => taskId && clearInterval(taskId);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
   }, []);
 
   /** 
