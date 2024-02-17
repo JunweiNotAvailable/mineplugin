@@ -7,12 +7,12 @@ It is a web app built with [React](https://react.dev/) and [AWS](https://aws.ama
 <img width="640" alt="" src="https://github.com/JunweiNotAvailable/mc-picker/assets/89463326/5442b94d-d416-489d-842b-0bba431ea581" >
 
 
-## Why I started?
+## Why did I start?
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
 
-That is when this web-based tool comes in. For developers to build Minecraft plugins **anytime**, **anywhere**.
+That is when this web-based tool comes in, for developers to build Minecraft plugins **anytime**, **anywhere**.
 
-## How it works?
+## How does it work?
 - **Frontend** - In the frontend, there are only two buttons - **Build** and **Download**, and a code editor
 - **Cloud services**
   - **AWS S3 Bucket** - To store the files (source code, config files...)
