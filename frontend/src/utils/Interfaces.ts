@@ -8,4 +8,6 @@ export interface AppProps {
 export interface User {
   username: string
   nickname: string
+  plugins: number
+  picture?: string
 }

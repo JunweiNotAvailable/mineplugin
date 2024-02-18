@@ -14,8 +14,15 @@ body {
   flex-direction: column;
   height: 100dvh;
 }
+.app-body {
+  flex: 1;
+  overflow: auto;
+}
 button {
   cursor: pointer;
+  transition: all .2s;
+}
+svg {
   transition: all .2s;
 }
 .main-button {
@@ -43,4 +50,11 @@ button {
 }
 .main-input:focus {
   outline-color: var(--secondary-color);
+}
+.scroller::-webkit-scrollbar {
+  background: none;
+  width: 10px;
+}
+.scroller::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
 }

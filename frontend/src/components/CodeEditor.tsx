@@ -6,7 +6,7 @@ interface Props {
   setCode: React.Dispatch<React.SetStateAction<string>>
 }
 
-const CodeEditor: React.FC<Props> = ( props ) => {
+const CodeEditor: React.FC<Props> = React.memo(( props ) => {
 
   return (
     <Editor
@@ -18,6 +18,6 @@ const CodeEditor: React.FC<Props> = ( props ) => {
       onChange={text => props.setCode(text || '')}
     />
   )
-}
+})
 
 export default CodeEditor

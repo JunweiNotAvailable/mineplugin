@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import CodeEditor from '../../components/CodeEditor'
 import './style.css';
-import Logo from '../../asset/Logo';
+import Logo from '../../asset/svgs/Logo';
 import { defaultCode, extractPluginName } from '../../utils/Code';
 import { build, downloadFile, updateSpigotFiles } from '../../utils/CodeBuild';
 import axios from 'axios';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { AppProps } from '../../utils/Interfaces'
+import { AppProps, User } from '../../utils/Interfaces'
 import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../../asset/Logo';
+import Logo from '../../asset/svgs/Logo';
 import { Auth } from 'aws-amplify';
 import { config } from '../../utils/Config';
 
@@ -82,9 +82,10 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
 
   // Create a user and store to database
   const setupUser = async () => {
-    const newUser = {
+    const newUser: User = {
       username: username,
-      nickname: nickname
+      nickname: nickname,
+      plugins: 0
     };
     try {
       await fetch(`${config.api.mongodb}/put-single-item`, {

@@ -12,6 +12,7 @@ import ForgetPassword from './pages/auth/ForgetPassword';
 import SignUp from './pages/auth/SignUp';
 import { storageUsername } from './utils/Constants';
 import { config } from './utils/Config';
+import PageNotFound from './pages/pagenotfound/PageNotFound';
 
 function App() {
 
@@ -52,12 +53,15 @@ function App() {
           <Route path='/forgetpassword' element={<ForgetPassword />} />
 
           {/* main routes */}
-          <Route path='/' element={user ? <Home {...appProps} /> : <Landing />} /> {/* to home page if user logged in otherwise go to landing page */}
+          <Route path='/' element={user === null ? <Landing /> : user ? <Home {...appProps} /> : <></>} /> {/* to home page if user logged in otherwise go to landing page */}
           <Route path='/:username' element={<Profile {...appProps} />} />
           {/* the routes require authenticated user */}
           {user && <>
             <Route path='/:username/:plugin_id' element={<Plugin />} />
           </>}
+
+          {/* default */}
+          <Route path='/pagenotfound' element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

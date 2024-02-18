@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import Logo from '../asset/Logo'
+import Logo from '../asset/svgs/Logo'
 import './style.css'
 import { AppProps } from '../utils/Interfaces'
 import { storageUsername } from '../utils/Constants'

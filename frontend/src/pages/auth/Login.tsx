@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { AppProps } from '../../utils/Interfaces'
 import './style.css'
-import Logo from '../../asset/Logo';
+import Logo from '../../asset/svgs/Logo';
 import { Link, useNavigate } from 'react-router-dom';
 import { storageUsername } from '../../utils/Constants';
 import { Auth } from 'aws-amplify';
