@@ -5,6 +5,7 @@ import Logo from '../../asset/Logo';
 import { Link, useNavigate } from 'react-router-dom';
 import { storageUsername } from '../../utils/Constants';
 import { Auth } from 'aws-amplify';
+import { config } from '../../utils/Config';
 
 const Login: React.FC<AppProps> = ({ user, setUser }) => {
 
@@ -20,18 +21,22 @@ const Login: React.FC<AppProps> = ({ user, setUser }) => {
     setAreValidInputs(username.length > 0 && password.length > 0);
   }, [username, password]);
 
-  // the login function
+  // Login to Cognito and get user data from database
   const login = async () => {
     setErrorMessage('');
     setLoading(true);
     try {
-      // cognito sign in
+      // Cognito sign in
       await Auth.signIn(username, password);
-      // get user data
-
-      // store current user
-      localStorage.setItem(storageUsername, username);
-      navigate('/');
+      // Get user data
+      const res = await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&key=username&id=${username}`);
+      if (res.ok) {
+        // Set app user to logged in user
+        setUser(await res.json());
+        // Store current user
+        localStorage.setItem(storageUsername, username);
+        navigate('/');
+      }
     } catch (error) {
       setErrorMessage('Wrong username or password');
       console.log(error)

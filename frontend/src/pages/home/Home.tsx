@@ -9,7 +9,7 @@ const Home: React.FC<AppProps> = ({ user }) => {
 
   // Redirect to user's profile
   useEffect(() => {
-    navigate(`/${user?.id}`);
+    navigate(`/${user?.username}`);
   }, [user]);
 
   return (

@@ -1,9 +1,22 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../asset/Logo'
 import './style.css'
 import { AppProps } from '../utils/Interfaces'
+import { storageUsername } from '../utils/Constants'
 
 const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    // Set user to null
+    setUser(null);
+    // Remove username from local storage
+    localStorage.removeItem(storageUsername);
+    // Navigate to home page
+    navigate('/');
+  }
+
   return (
     <header className='navbar'>
       {/* logo */}
@@ -17,7 +30,7 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
           <Link to={'/login'} className='main-button' style={{ padding: '.3rem 1rem', fontSize: '.9rem' }}>Log in</Link>
           :
           <nav>
-            <button>logout</button>
+            <button onClick={logout}>logout</button>
           </nav>}
     </header>
   )

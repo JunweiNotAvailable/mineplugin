@@ -3,6 +3,7 @@ import { AppProps } from '../../utils/Interfaces'
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../asset/Logo';
 import { Auth } from 'aws-amplify';
+import { config } from '../../utils/Config';
 
 interface Props extends AppProps {
   codeIsSent?: boolean
@@ -52,7 +53,7 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
       if (err.name === "UsernameExistsException") {
         setErrorMessage('Email or username existed');
       } else if (err.name === 'InvalidPasswordException') {
-        setErrorMessage('The password has to be at least 6 characters');
+        setErrorMessage('The password has to be at least 8 characters');
       }
       console.log(err)
     }
@@ -81,7 +82,23 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
 
   // Create a user and store to database
   const setupUser = async () => {
-
+    const newUser = {
+      username: username,
+      nickname: nickname
+    };
+    try {
+      await fetch(`${config.api.mongodb}/put-single-item`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mc-picker',
+          collection: 'users',
+          value: newUser
+        }),
+      });
+    } catch (error) {
+      console.log('Failed creating user')
+    }
   }
 
   return (

@@ -10,6 +10,8 @@ import { User } from './utils/Interfaces';
 import Login from './pages/auth/Login';
 import ForgetPassword from './pages/auth/ForgetPassword';
 import SignUp from './pages/auth/SignUp';
+import { storageUsername } from './utils/Constants';
+import { config } from './utils/Config';
 
 function App() {
 
@@ -20,7 +22,22 @@ function App() {
 
   // Load the current user
   useEffect(() => {
-    setUser(null);
+    (async () => {
+      // Check if there's current user
+      const currUsername = localStorage.getItem(storageUsername);
+      if (currUsername) {
+        // get User data from mongodb
+        try {
+          const userData = await ((await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&key=username&id=${currUsername}`))).json();
+          setUser(userData);
+        } catch (error) {
+          console.log('Failed getting user');
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    })();
   }, []);
 
   return (
