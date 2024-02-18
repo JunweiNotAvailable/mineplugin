@@ -31,6 +31,7 @@ function App() {
           {/* auth routes */}
           <Route path='/login' element={<Login {...appProps} />} />
           <Route path='/signup' element={<SignUp {...appProps} />} />
+          <Route path='/confirmsignup' element={<SignUp {...appProps} codeIsSent />} />
           <Route path='/forgetpassword' element={<ForgetPassword />} />
 
           {/* main routes */}
