@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { AppProps } from '../../utils/Interfaces'
+import { AppProps, Plugin } from '../../utils/Interfaces'
 import './style.css'
 import PluginsIcon from '../../asset/svgs/PluginsIcon';
 import { toClassFormat } from '../../utils/Functions';
+import { config } from '../../utils/Config';
+import { defaultCode } from '../../utils/Code';
+import { useNavigate } from 'react-router-dom';
 
-const NewPlugin: React.FC<AppProps> = ({ user, setUser }) => {
+const NewPlugin: React.FC<AppProps> = ({ user }) => {
 
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [version, setVersion] = useState('1.20');
@@ -18,13 +22,47 @@ const NewPlugin: React.FC<AppProps> = ({ user, setUser }) => {
 
   // Check if inputs are valid
   useEffect(() => {
-    setAreValidInputs(!user?.plugins.includes(toClassFormat(name)) && name.length > 0 && description.length > 0);
+    setAreValidInputs(!user?.plugins.map(n => n.toLowerCase()).includes(name.toLowerCase()) && name.length > 0 && description.length > 0);
   }, [name, description]);
 
-  // Create plugin and go to edit page
+  /**
+   * Create plugin
+   * Store to database
+   * Go to edit page
+   */
   const submit = async () => {
+    const plugin: Plugin = {
+      name: name,
+      description: description,
+      version: '1.20',
+      owner: user?.username as string,
+      code: defaultCode.replaceAll('MyPlugin', toClassFormat(name)),
+    };
     try {
-      
+      // Store new plugin data
+      await fetch(`${config.api.mongodb}/put-single-item`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mc-picker',
+          collection: 'plugins',
+          value: plugin,
+        })
+      });
+      // Store updated user
+      await fetch(`${config.api.mongodb}/update-single-item`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mc-picker',
+          collection: 'users',
+          key: 'username',
+          id: user?.username as string,
+          fields: ["plugins"],
+          values: [[...user?.plugins as string[], name]]
+        })
+      });
+      navigate(`/${user?.username}/${name}`);
     } catch (error) {
       console.log(error)
     }

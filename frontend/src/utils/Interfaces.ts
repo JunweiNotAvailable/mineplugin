@@ -11,3 +11,11 @@ export interface User {
   plugins: string[]
   picture?: string
 }
+
+export interface Plugin {
+  name: string
+  description: string
+  version: string
+  owner: string
+  code: string
+}
