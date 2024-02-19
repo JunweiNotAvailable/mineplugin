@@ -39,7 +39,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
         navigate('/page-not-found');
       }
     })();
-  }, [username]);
+  }, [username, user]);
 
   // Update option when route changes
   useEffect(() => {

@@ -56,6 +56,7 @@ function App() {
           {/* main routes */}
           <Route path='/' element={user === null ? <Landing /> : user ? <Home {...appProps} /> : <></>} /> {/* to home page if user logged in otherwise go to landing page */}
           <Route path='/:username' element={<Profile {...appProps} />} />
+          
           {/* the routes require authenticated user */}
           {user && <>
             <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />

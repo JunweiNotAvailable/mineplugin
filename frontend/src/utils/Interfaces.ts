@@ -18,4 +18,5 @@ export interface Plugin {
   version: string
   owner: string
   code: string
+  isPublic: boolean
 }

@@ -13,6 +13,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [version, setVersion] = useState('1.20');
+  const [isPublic, setIsPublic] = useState(true);
   const [areValidInputs, setAreValidInputs] = useState(false);
   
   // Set document title
@@ -37,6 +38,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
       version: '1.20',
       owner: user?.username as string,
       code: defaultCode.replaceAll('MyPlugin', toClassFormat(name)),
+      isPublic: isPublic,
     };
     try {
       // Store new plugin data
@@ -80,6 +82,10 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
         <div className='input-group mt-3'>
           <label>Description<span className='ml-2 text-gray-400'>(Optional)</span></label>
           <input placeholder='Add description...' className='main-input' value={description} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)} />
+        </div>
+        <div className='text-sm mt-3 flex items-center cursor-pointer' onClick={() => setIsPublic(!isPublic)}>
+          <div className={`mr-4 w-4 h-4 flex items-center justify-center border rounded-full border-gray-300 text-white${!isPublic ? ' bg-blue-400' : ''}`}>{!isPublic && <i className='fa-solid fa-check' style={{ fontSize: 10 }} />}</div>
+          Private
         </div>
         <div className='flex justify-end mt-8'>
           <button onClick={submit} className='main-button text-sm py-1.5 px-4 disabled:bg-secondary' disabled={!areValidInputs}>Create plugin</button>
