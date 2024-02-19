@@ -13,6 +13,7 @@ import SignUp from './pages/auth/SignUp';
 import { storageUsername } from './utils/Constants';
 import { config } from './utils/Config';
 import PageNotFound from './pages/pagenotfound/PageNotFound';
+import NewPlugin from './pages/new/NewPlugin';
 
 function App() {
 
@@ -57,7 +58,9 @@ function App() {
           <Route path='/:username' element={<Profile {...appProps} />} />
           {/* the routes require authenticated user */}
           {user && <>
+            <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
             <Route path='/:username/:plugin_id' element={<Plugin />} />
+            <Route path='/new' element={<NewPlugin {...appProps} />} />
           </>}
 
           {/* default */}

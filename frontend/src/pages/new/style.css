@@ -1,0 +1,9 @@
+.input-group {
+  font-size: .875rem;
+  display: flex;
+  flex-direction: column;
+}
+.input-group input {
+  font-size: .875rem;
+  margin-top: .25rem;
+}

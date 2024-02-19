@@ -85,7 +85,7 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
     const newUser: User = {
       username: username,
       nickname: nickname,
-      plugins: 0
+      plugins: [],
     };
     try {
       await fetch(`${config.api.mongodb}/put-single-item`, {

@@ -7,6 +7,9 @@ module.exports = {
         'primary': '#252354',
         'primary-hover': '#323161',
         'secondary': '#d4d4e6',
+      },
+      maxWidth: {
+        '960': 960
       }
     },
   },
