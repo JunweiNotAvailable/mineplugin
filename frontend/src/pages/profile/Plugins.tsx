@@ -37,9 +37,9 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
       </div>
       {/* my plugins */}
       <div className="mt-8">
-        {plugins.map(plugin => <div className='flex items-center mt-4 py-2' key={`plugin-${plugin.name}`}>
+        {plugins.map(plugin => <div className='flex items-center mt-4 py-1' key={`plugin-${plugin.name}`}>
           {/* image */}
-          <div className='plugin-image w-12 aspect-square flex items-center justify-center bg-gray-200 rounded-lg'>
+          <div className='plugin-image w-10 aspect-square flex items-center justify-center bg-gray-200 rounded-lg'>
             {plugin.picture ? <img  /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
           </div>
           {/* name & description */}

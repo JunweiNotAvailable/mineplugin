@@ -20,4 +20,6 @@ export interface Plugin {
   code: string
   isPublic: boolean
   picture?: string
+  lastUpdate?: string
+  downloads: number
 }

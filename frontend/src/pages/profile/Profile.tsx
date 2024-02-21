@@ -79,7 +79,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
       </aside>
       {/* main */}
       <main className='flex-1 p-4 pr-8 min-w-0 scroller'>
-        <div className='font-bold text-xl flex items-center'>
+        <div className='font-medium text-xl flex items-center'>
           {option === 'Plugin' && <i className='fa-solid fa-arrow-left mr-4 cursor-pointer p-2 pl-0' onClick={() => navigate(`/${profileUser.username}`)} />}
           {option === 'Plugin' ? 'Plugins' : option}
         </div>

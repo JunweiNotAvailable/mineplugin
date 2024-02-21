@@ -39,6 +39,8 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
       owner: user?.username as string,
       code: defaultCode.replaceAll('MyPlugin', toClassFormat(name)),
       isPublic: isPublic,
+      downloads: 0,
+      lastUpdate: new Date().toISOString(),
     };
     try {
       // Store new plugin data
