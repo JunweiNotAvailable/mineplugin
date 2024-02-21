@@ -8,6 +8,7 @@ import PluginsIcon from '../../asset/svgs/PluginsIcon';
 import Cog from '../../asset/svgs/Cog';
 import Plugins from './Plugins';
 import Settings from './Settings';
+import PluginOverview from './PluginOverview';
 
 interface Props extends AppProps {
   option?: string
@@ -17,7 +18,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { username } = useParams();
+  const { username, pluginId } = useParams();
   const [profileUser, setProfileUser] = useState<User | undefined>(undefined);
   const [option, setOption] = useState(props.option || 'Plugins'); // The selected option on sidebar
   const [isAuthUser, setIsAuthUser] = useState(false); // If the profile user is the visitor
@@ -27,7 +28,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = (await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&key=username&id=${username}`));
+        const res = (await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&keys=['username']&values=['${username}']`));
         if (res.ok) {
           const userData = await res.json();
           setProfileUser(userData);
@@ -73,15 +74,19 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
         {/* options */}
         <div className='flex-1 flex flex-col mt-4 overflow-auto'>
           <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left rounded-md hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
-          <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left rounded-md hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><Cog /></div>Settings</button>
+          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left rounded-md hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
         </div>
       </aside>
       {/* main */}
-      <main className='flex-1 p-4 pr-8'>
-        <div className='font-bold text-xl flex items-center'>{option}</div>
+      <main className='flex-1 p-4 pr-8 min-w-0 scroller'>
+        <div className='font-bold text-xl flex items-center'>
+          {option === 'Plugin' && <i className='fa-solid fa-arrow-left mr-4 cursor-pointer p-2 pl-0' onClick={() => navigate(`/${profileUser.username}`)} />}
+          {option === 'Plugin' ? 'Plugins' : option}
+        </div>
         <div className='mt-4'>
           {option === 'Plugins' ? <Plugins profileUser={profileUser} isAuthUser={isAuthUser} />
           : option === 'Settings' ? <Settings />
+          : option === 'Plugin' ? <PluginOverview profileUser={profileUser} isAuthUser={isAuthUser} />
           : <></>}
         </div>
       </main>

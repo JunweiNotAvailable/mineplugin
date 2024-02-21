@@ -19,4 +19,5 @@ export interface Plugin {
   owner: string
   code: string
   isPublic: boolean
+  picture?: string
 }

@@ -51,6 +51,9 @@ svg {
 .main-input:focus {
   outline-color: var(--secondary-color);
 }
+.scroller {
+  overflow: auto;
+}
 .scroller::-webkit-scrollbar {
   background: none;
   width: 10px;
