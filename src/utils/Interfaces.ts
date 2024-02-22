@@ -23,4 +23,5 @@ export interface Plugin {
   picture?: string
   lastUpdate?: string
   downloads: number
+  alreadyBuilt?: boolean
 }

@@ -12,3 +12,18 @@ export const toClassFormat = (str: string) => {
 
   return classFormatted;
 }
+
+/**
+ * Replace the last pattern of searched string
+ */
+export const replaceLast = (str: string, search: string, replacement: string) => {
+  const lastIndex = str.lastIndexOf(search);
+  // If the search string is not found, return the original string
+  if (lastIndex === -1) return str;
+  // Replace the last occurrence
+  const beforeLastIndex = str.substring(0, lastIndex);
+  const afterLastIndex = str.substring(lastIndex + search.length);
+  const replacedString = beforeLastIndex + replacement + afterLastIndex;
+
+  return replacedString;
+}
