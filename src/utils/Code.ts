@@ -1,3 +1,42 @@
+export const codeSet = {
+  // Components
+  Components: new Map([
+    ['Plugin Enable', 
+`
+  @Override
+  public void onEnable() {
+    System.out.println("MyPlugin enabled!");
+  }
+`],
+    ['Plugin Disable',  
+`
+  @Override
+  public void onDisable() {
+    System.out.println("MyPlugin disabled!");
+  }
+`],
+    ['Event',  
+`
+  @EventHandler
+  public void onEvent(Event event) {
+
+  }
+`],
+    ['Command',  
+`
+  @Override
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (command.getName().equalsIgnoreCase("<COMMAND>")) {
+
+    }
+    return true;
+  }
+`],
+  ]),
+  // Statements
+  Statements: new Map([]),
+};
+
 export const defaultCode = `import org.bukkit.plugin.java.JavaPlugin;
 
 public class MyPlugin extends JavaPlugin {
