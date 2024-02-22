@@ -13,7 +13,7 @@ import { storageUsername } from './utils/Constants';
 import { config } from './utils/Config';
 import PageNotFound from './pages/pagenotfound/PageNotFound';
 import NewPlugin from './pages/new/NewPlugin';
-import PluginEdit from './pages/edit/PluginEdit';
+import PluginDev from './pages/dev/PluginDev';
 
 function App() {
 
@@ -59,7 +59,7 @@ function App() {
           <Route path='/:username/:pluginId' element={<Profile {...appProps} option='Plugin' />} />
           <Route path='/new' element={<NewPlugin {...appProps} />} />
           <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
-          <Route path='/:username/:pluginId/dev' element={<PluginEdit {...appProps} />} />
+          <Route path='/:username/:pluginId/dev' element={<PluginDev {...appProps} />} />
 
           {/* default */}
           <Route path='/pagenotfound' element={<PageNotFound />} />

@@ -3,7 +3,7 @@ import { AppProps, Plugin, User } from '../../utils/Interfaces'
 import { useNavigate, useParams } from 'react-router-dom';
 import { config } from '../../utils/Config';
 
-const PluginEdit: React.FC<AppProps> = ({ user, setUser }) => {
+const PluginDev: React.FC<AppProps> = ({ user, setUser }) => {
 
   const navigate = useNavigate();
   const { username, pluginId } = useParams();
@@ -41,10 +41,10 @@ const PluginEdit: React.FC<AppProps> = ({ user, setUser }) => {
   }, [user]);
   
   return (
-    <div>
-      {user?.username} {plugin?.name}
+    <div className='flex-1'>
+      
     </div>
   )
 }
 
-export default PluginEdit
+export default PluginDev
