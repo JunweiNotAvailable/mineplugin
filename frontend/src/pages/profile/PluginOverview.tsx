@@ -35,6 +35,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
         console.log('Failed getting plugin')
       }
     })();
+    document.title = `${pluginId} | MC Picker`;
   }, []);
 
   // Reset inputs when click edit button
@@ -88,7 +89,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
           <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2'>Save</button>
         </div> : <div className='w-32 flex flex-col text-sm h-full py-2'>
           <button className='main-button py-1 flex items-center justify-center'><div className='w-3 mr-2'><Download color='#fff' /></div>Download</button>
-          {isAuthUser && <button className='border border-primary rounded py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
+          {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary rounded py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
         </div>}
       </div>
       {isEdittingPlugin ?

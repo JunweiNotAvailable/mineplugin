@@ -23,9 +23,16 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
     document.title = 'New plugin | MC Picker';
   }, []);
 
+  // Check if user is authenticated
+  useEffect(() => {
+    if (user === null) {
+      navigate('/pagenotfound');
+    }
+  }, [user]);
+
   // Check if inputs are valid
   useEffect(() => {
-    setAreValidInputs(!user?.plugins.map(n => n.toLowerCase()).includes(name.toLowerCase()) && name.length > 0 && description.length > 0);
+    setAreValidInputs(!user?.plugins.map(n => n.toLowerCase()).includes(name.replaceAll(' ', '-').toLowerCase()) && name.length > 0 && description.length > 0);
   }, [name, description]);
 
   /**
@@ -35,10 +42,10 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
    */
   const submit = async () => {
     const plugin: Plugin = {
-      name: name,
+      name: name.replaceAll(' ', '-'),
       description: description,
       details: details,
-      version: '1.20',
+      version: version,
       owner: user?.username as string,
       code: defaultCode.replaceAll('MyPlugin', toClassFormat(name)),
       isPublic: isPublic,
@@ -66,10 +73,10 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
           keys: ['username'],
           values: [user?.username as string],
           fields: ["plugins"],
-          field_values: [[...user?.plugins as string[], name]]
+          field_values: [[...user?.plugins as string[], name.replaceAll(' ', '-')]]
         })
       });
-      navigate(`/${user?.username}/${name}`);
+      navigate(`/${user?.username}/${name.replaceAll(' ', '-')}`);
     } catch (error) {
       console.log(error)
     }

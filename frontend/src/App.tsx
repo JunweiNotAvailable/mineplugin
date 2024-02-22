@@ -59,7 +59,7 @@ function App() {
           <Route path='/:username/:pluginId' element={<Profile {...appProps} option='Plugin' />} />
           <Route path='/new' element={<NewPlugin {...appProps} />} />
           <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
-          <Route path='/:username/:pluginId/edit' element={<PluginEdit {...appProps} />} />
+          <Route path='/:username/:pluginId/dev' element={<PluginEdit {...appProps} />} />
 
           {/* default */}
           <Route path='/pagenotfound' element={<PageNotFound />} />

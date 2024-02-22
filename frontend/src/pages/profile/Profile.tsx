@@ -18,7 +18,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { username, pluginId } = useParams();
+  const { username } = useParams();
   const [profileUser, setProfileUser] = useState<User | undefined>(undefined);
   const [option, setOption] = useState(props.option || 'Plugins'); // The selected option on sidebar
   const [isAuthUser, setIsAuthUser] = useState(false); // If the profile user is the visitor
@@ -37,7 +37,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           document.title = `${userData.username} | MC Picker`
         }
       } catch (error) {
-        navigate('/page-not-found');
+        navigate('/pagenotfound');
       }
     })();
   }, [username, user]);
