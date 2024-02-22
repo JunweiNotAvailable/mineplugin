@@ -57,13 +57,9 @@ function App() {
           <Route path='/' element={user === null ? <Landing /> : user ? <Home {...appProps} /> : <></>} /> {/* to home page if user logged in otherwise go to landing page */}
           <Route path='/:username' element={<Profile {...appProps} />} />
           <Route path='/:username/:pluginId' element={<Profile {...appProps} option='Plugin' />} />
-          
-          {/* the routes require authenticated user */}
-          {user && <>
-            <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
-            <Route path='/:username/:pluginId/edit' element={<PluginEdit {...appProps} />} />
-            <Route path='/new' element={<NewPlugin {...appProps} />} />
-          </>}
+          <Route path='/new' element={<NewPlugin {...appProps} />} />
+          <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
+          <Route path='/:username/:pluginId/edit' element={<PluginEdit {...appProps} />} />
 
           {/* default */}
           <Route path='/pagenotfound' element={<PageNotFound />} />

@@ -61,3 +61,9 @@ svg {
 .scroller::-webkit-scrollbar-thumb {
   background: #e0e0e0;
 }
+ul {
+  list-style-type: disc !important;
+}
+ol {
+  list-style-type: decimal !important;
+}

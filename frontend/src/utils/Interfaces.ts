@@ -15,6 +15,7 @@ export interface User {
 export interface Plugin {
   name: string
   description: string
+  details?: string
   version: string
   owner: string
   code: string
