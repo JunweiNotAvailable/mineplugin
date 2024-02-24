@@ -7,6 +7,7 @@ import { config } from '../../utils/Config';
 import { defaultCode } from '../../utils/Code';
 import { useNavigate } from 'react-router-dom';
 import MarkdownEditor from '../../components/MarkdownEditor';
+import Spinner from '../../components/Spinner';
 
 const NewPlugin: React.FC<AppProps> = ({ user }) => {
 
@@ -17,6 +18,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
   const [version, setVersion] = useState('1.20');
   const [isPublic, setIsPublic] = useState(true);
   const [areValidInputs, setAreValidInputs] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Set document title
   useEffect(() => {
@@ -41,6 +43,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
    * Go to edit page
    */
   const submit = async () => {
+    setIsCreating(true);
     const plugin: Plugin = {
       name: name.replaceAll(' ', '-'),
       description: description,
@@ -80,6 +83,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
     } catch (error) {
       console.log(error)
     }
+    setIsCreating(false);
   }
 
   return (
@@ -106,7 +110,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
             Private
           </div>
           <div className='flex justify-end mt-8'>
-            <button onClick={submit} className='main-button text-sm py-1.5 px-4 disabled:bg-secondary' disabled={!areValidInputs}>Create plugin</button>
+            <button onClick={submit} className={`main-button text-sm py-1.5 px-4 disabled:bg-secondary${isCreating ? ' px-8 py-2' : ''}`} disabled={!areValidInputs || isCreating}>{isCreating ? <Spinner size={16} color='#fff' /> : 'Create plugin'}</button>
           </div>
         </div>
       </div>

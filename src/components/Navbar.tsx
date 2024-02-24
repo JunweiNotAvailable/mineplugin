@@ -18,7 +18,7 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
   }
 
   return (
-    <header className='navbar border-b border-gray-100 z-50'>
+    <header className='navbar border-b border-gray-100 z-40'>
       {/* logo */}
       <Link className='logo' to={'/'}>
         <div style={{ width: 28, display: 'flex', alignItems: 'center', marginRight: '.5rem' }}><Logo /></div>

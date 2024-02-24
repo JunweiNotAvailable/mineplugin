@@ -8,6 +8,7 @@ import UIWMarkdownEditor from '@uiw/react-markdown-editor'
 import MarkdownEditor from '../../components/MarkdownEditor'
 import { extractPluginName } from '../../utils/Code'
 import { downloadFile } from '../../utils/CodeBuild'
+import Spinner from '../../components/Spinner'
 
 interface Props {
   profileUser: User
@@ -115,9 +116,9 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
         </div>
         {isEdittingPlugin ? <div className='w-40 flex text-sm h-full py-2'>
           <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-primary py-1 text-primary hover:border-primary-hover hover:text-primary-hover'>Cancel</button>
-          <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2'>Save</button>
+          <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2 disabled:bg-secondary' disabled={isUpdating}>{isUpdating ? <Spinner size={14} color='#fff' /> : 'Save'}</button>
         </div> : <div className='w-32 flex flex-col text-sm h-full py-2'>
-          <button onClick={download} className='main-button py-1 flex items-center justify-center'><div className='w-3 mr-2'><Download color='#fff' /></div>Download</button>
+          <button onClick={download} className='main-button py-1 flex items-center justify-center disabled:py-2 disabled:bg-secondary' disabled={isDownloading}>{isDownloading ? <Spinner size={14} color='#fff' /> : <><span className='w-3 mr-2'><Download color='#fff' /></span>Download</>}</button>
           {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
         </div>}
       </div>
@@ -128,6 +129,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
         : <div className='py-4 px-2 font-light'>{plugin.description}</div>}
       {/* details */}
       <div className='border-t py-8 px-2'>
+        {(isAuthUser && !isEdittingPlugin) && <div className='flex justify-end'><i onClick={() => setIsEdittingPlugin(true)} className='fa-solid fa-pen text-gray-400 ml-4 cursor-pointer text-sm' /></div>}
         {isEdittingPlugin ? <MarkdownEditor source={tempDetails} setSource={setTempDetails} />
           : (plugin.details ?
             <UIWMarkdownEditor.Markdown className='markdown-content' source={plugin.details} />

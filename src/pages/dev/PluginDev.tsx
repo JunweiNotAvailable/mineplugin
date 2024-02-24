@@ -225,7 +225,8 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
             </div>
           </aside>
           <div className='flex-1 p-1 min-w-0 flex flex-col'>
-            <div className='rounded overflow-hidden flex-1'>
+            <div className='text-sm px-1'>{extractPluginName(code)}.java</div>
+            <div className='rounded overflow-hidden flex-1 mt-1'>
               <CodeEditor code={code} setCode={setCode} />
             </div>
             <div className={`border-t border-gray-300 p-1 px-2 flex flex-col`}>
