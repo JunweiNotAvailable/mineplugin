@@ -7,7 +7,7 @@ import { codeSet, extractPluginName } from '../../utils/Code';
 import CodeEditor from '../../components/CodeEditor';
 import { replaceLast } from '../../utils/Functions';
 import Logo from '../../asset/svgs/Logo';
-import { build, updateSpigotFiles } from '../../utils/CodeBuild';
+import { build, downloadFile, updateSpigotFiles } from '../../utils/CodeBuild';
 
 const PluginDev: React.FC<AppProps> = ({ user }) => {
 
@@ -24,6 +24,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [isGeneratingFiles, setIsGeneratingFiles] = useState(false);
   const [isBuilding, setIsBuilding] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   // console
   const [isConsoleOpened, setIsConsoleOpened] = useState(false);
   const [logs, setLogs] = useState<any[]>([]);
@@ -80,30 +81,28 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         setIsBuilding(true);
         const statusRes = (await fetch(`${config.api.codeBuild}/track-build?buildId=${buildId}`));
         const status = (await statusRes.json()).status;
-        // Get logs if still building
-        const logsRes = (await fetch(`${config.api.codeBuild}/stream-logs?buildName=mineplugin-build&buildId=${buildId}`));
-        setLogs(await logsRes.json());
         // Remove build id from local storage if completed
         if (status !== 'IN_PROGRESS') {
           localStorage.removeItem('MinePlugin-buildId');
           setIsBuilding(false);
           // Update plugin to already built
-          if (status === 'SUCCEEDED') {
-            await fetch(`${config.api.mongodb}/update-single-item`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                database: 'mineplugin',
-                collection: 'plugins',
-                keys: ['owner', 'name'],
-                values: [owner?.username, plugin?.name],
-                fields: ['alreadyBuilt'],
-                field_values: [true]
-              })
-            });
-            setPlugin({ ...plugin as Plugin, alreadyBuilt: true });
-          }
+          await fetch(`${config.api.mongodb}/update-single-item`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              database: 'mineplugin',
+              collection: 'plugins',
+              keys: ['owner', 'name'],
+              values: [owner?.username, plugin?.name],
+              fields: ['alreadyBuilt', 'downloadUsers'],
+              field_values: [true, []]
+            })
+          });
+          setPlugin({ ...plugin as Plugin, alreadyBuilt: true });
         }
+        // Get logs if still building
+        const logsRes = (await fetch(`${config.api.codeBuild}/stream-logs?buildName=mineplugin-build&buildId=${buildId}`));
+        setLogs(await logsRes.json());
       // no current build
       } else {
         setIsBuilding(false);
@@ -166,6 +165,31 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     localStorage.setItem('MinePlugin-buildId', buildId);
   }
 
+  // Download the plugin
+  const download = async () => {
+    if (!plugin || !owner) return;
+    setIsDownloading(true);
+    const pluginName = extractPluginName(plugin.code) || '';
+    await downloadFile(`src/${owner.username}/${pluginName}/${pluginName}.jar`, `${pluginName}.jar`);
+    // Update download users & numbers
+    if (!plugin.downloadUsers?.includes(owner.username)) {
+      setPlugin({ ...plugin, downloadUsers: plugin.downloadUsers ? [...plugin.downloadUsers, owner.username] : [owner.username], downloads: plugin.downloads + 1 });
+      await fetch(`${config.api.mongodb}/update-single-item`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mineplugin',
+          collection: 'plugins',
+          keys: ['owner', 'name'],
+          values: [owner.username, plugin.name],
+          fields: ["downloads", 'downloadUsers'],
+          field_values: [plugin.downloads + 1, plugin.downloadUsers ? [...plugin.downloadUsers, owner.username] : [owner.username]]
+        })
+      });
+    }
+    setIsDownloading(false);
+  }
+
   return (
     plugin ?
       <div className='flex-1 flex flex-col scroller'>
@@ -189,6 +213,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
             </div>
             <button onClick={saveCode} ref={saveBtnRef} className='py-1 px-4 border border-primary hover:border-primary-hover disabled:text-gray-300 disabled:border-gray-300' disabled={code === plugin.code || isBuilding || isChecking || isSaving || isGeneratingFiles}>Save</button>
             <button onClick={generateAndBuild} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || plugin.alreadyBuilt}>Build</button>
+            <button onClick={download} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || isDownloading}>Download</button>
           </div>
         </div>
         {/* dev body */}
@@ -207,9 +232,10 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
               <div className='text-gray-500 text-sm font-bold cursor-pointer' onClick={() => setIsConsoleOpened(!isConsoleOpened)}><i className='fa-solid fa-terminal mr-2 text-xs' />Console</div>
               <div className={`${isConsoleOpened ? 'pb-16 h-48 scroller' : 'h-0 overflow-hidden'}`} ref={logsContainerRef}>
                 {isGeneratingFiles && <div className='text-sm text-gray-300'>Generating files...</div>}
+                {(!isGeneratingFiles && isBuilding && logs.length === 0) && <div className='text-sm text-gray-300'>Start building...</div>}
                 {logs.map((log, i) => <div className='mt-1 flex items-start text-sm'>
                   <div className='text-gray-300'>{i + 1}</div>
-                  <div className={`ml-4${log.includes('Running command') ? ' text-blue-500' : log.includes('COMMAND_EXECUTION_ERROR') ? ' text-red-500' : ''}`}>{log}</div>
+                  <div className={`ml-4${log.includes('Running command') ? ' text-blue-500' : log.includes('COMMAND_EXECUTION_ERROR') ? ' text-red-500' : log.includes(' BUILD State: SUCCEEDED') ? ' text-green-500' : ''}`}>{log}</div>
                 </div>)}
               </div>
             </div>

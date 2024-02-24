@@ -6,13 +6,16 @@ import Pickaxe from '../../asset/svgs/Pickaxe'
 import Download from '../../asset/svgs/Download'
 import UIWMarkdownEditor from '@uiw/react-markdown-editor'
 import MarkdownEditor from '../../components/MarkdownEditor'
+import { extractPluginName } from '../../utils/Code'
+import { downloadFile } from '../../utils/CodeBuild'
 
 interface Props {
   profileUser: User
   isAuthUser: boolean
+  authUser: User | null | undefined
 }
 
-const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
+const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) => {
 
   const navigate = useNavigate();
   const { username, pluginId } = useParams();
@@ -22,6 +25,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
   const [tempDetails, setTempDetails] = useState('');
   const [isEdittingPlugin, setIsEdittingPlugin] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Load the plugin by route
   useEffect(() => {
@@ -70,6 +74,31 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
     setIsUpdating(false);
   }
 
+  // Download the plugin
+  const download = async () => {
+    if (!plugin || !authUser) return;
+    setIsDownloading(true);
+    const pluginName = extractPluginName(plugin.code) || '';
+    await downloadFile(`src/${profileUser.username}/${pluginName}/${pluginName}.jar`, `${pluginName}.jar`);
+    // Update download users & numbers
+    if (!plugin.downloadUsers?.includes(authUser.username)) {
+      setPlugin({ ...plugin, downloadUsers: plugin.downloadUsers ? [...plugin.downloadUsers, authUser.username] : [authUser.username], downloads: plugin.downloads + 1 });
+      await fetch(`${config.api.mongodb}/update-single-item`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mineplugin',
+          collection: 'plugins',
+          keys: ['owner', 'name'],
+          values: [profileUser.username, plugin.name],
+          fields: ["downloads", 'downloadUsers'],
+          field_values: [plugin.downloads + 1, plugin.downloadUsers ? [...plugin.downloadUsers, authUser.username] : [authUser.username]]
+        })
+      });
+    }
+    setIsDownloading(false);
+  }
+
   return (
     plugin ? <div className='py-8'>
       {/* header */}
@@ -88,7 +117,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
           <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-primary py-1 text-primary hover:border-primary-hover hover:text-primary-hover'>Cancel</button>
           <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2'>Save</button>
         </div> : <div className='w-32 flex flex-col text-sm h-full py-2'>
-          <button className='main-button py-1 flex items-center justify-center'><div className='w-3 mr-2'><Download color='#fff' /></div>Download</button>
+          <button onClick={download} className='main-button py-1 flex items-center justify-center'><div className='w-3 mr-2'><Download color='#fff' /></div>Download</button>
           {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
         </div>}
       </div>

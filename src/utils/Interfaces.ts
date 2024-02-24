@@ -23,5 +23,6 @@ export interface Plugin {
   picture?: string
   lastUpdate?: string
   downloads: number
+  downloadUsers?: string[]
   alreadyBuilt?: boolean
 }
