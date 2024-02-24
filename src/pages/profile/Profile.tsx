@@ -28,13 +28,13 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = (await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&keys=['username']&values=['${username}']`));
+        const res = (await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=users&keys=['username']&values=['${username}']`));
         if (res.ok) {
           const userData = await res.json();
           setProfileUser(userData);
           setIsAuthUser(userData.username === user?.username);
           setIsLoadingProfileUser(false);
-          document.title = `${userData.username} | MC Picker`
+          document.title = `${userData.username} | MinePlugin`
         }
       } catch (error) {
         navigate('/pagenotfound');
@@ -73,8 +73,8 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
         </div>
         {/* options */}
         <div className='flex-1 flex flex-col mt-4 overflow-auto'>
-          <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left rounded-md hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
-          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left rounded-md hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
+          <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
+          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
         </div>
       </aside>
       {/* main */}

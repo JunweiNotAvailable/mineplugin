@@ -22,7 +22,7 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
     (async () => {
       const keys = isAuthUser ? `['owner']` : `['owner', 'isPublic']`;
       const values = isAuthUser ? `['${profileUser.username}']` : `['${profileUser.username}', True]`;
-      const res = (await fetch(`${config.api.mongodb}/query-items?database=mc-picker&collection=plugins&keys=${keys}&values=${values}&page=${page}&per_page=100`, { headers: { 'Content-Type': 'application/json' } }));
+      const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=${keys}&values=${values}&page=${page}&per_page=100`, { headers: { 'Content-Type': 'application/json' } }));
       const data = await res.json();
       setPlugins(data);
     })();

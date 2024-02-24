@@ -92,7 +92,7 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          database: 'mc-picker',
+          database: 'mineplugin',
           collection: 'users',
           value: newUser
         }),

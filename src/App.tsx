@@ -30,7 +30,7 @@ function App() {
       if (currUsername) {
         // get User data from mongodb
         try {
-          const userData = await ((await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&keys=['username']&values=['${currUsername}']`))).json();
+          const userData = await ((await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=users&keys=['username']&values=['${currUsername}']`))).json();
           setUser(userData);
         } catch (error) {
           console.log('Failed getting user');

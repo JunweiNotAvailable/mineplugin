@@ -27,7 +27,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=plugins&keys=['name', 'owner']&values=['${encodeURIComponent(pluginId as string)}', '${username}']`);
+        const res = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['name', 'owner']&values=['${encodeURIComponent(pluginId as string)}', '${username}']`);
         if (res.ok) {
           setPlugin(await res.json());
         }
@@ -35,7 +35,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
         console.log('Failed getting plugin')
       }
     })();
-    document.title = `${pluginId} | MC Picker`;
+    document.title = `${pluginId} | MinePlugin`;
   }, []);
 
   // Reset inputs when click edit button
@@ -56,7 +56,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        database: 'mc-picker',
+        database: 'mineplugin',
         collection: 'plugins',
         keys: ['owner', 'name'],
         values: [profileUser.username, plugin?.name],
@@ -85,11 +85,11 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser }) => {
           <div className='text-sm mt-1 font-light text-gray-400'>Total downloads: {plugin.downloads}</div>
         </div>
         {isEdittingPlugin ? <div className='w-40 flex text-sm h-full py-2'>
-          <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-primary rounded py-1 text-primary hover:border-primary-hover hover:text-primary-hover'>Cancel</button>
+          <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-primary py-1 text-primary hover:border-primary-hover hover:text-primary-hover'>Cancel</button>
           <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2'>Save</button>
         </div> : <div className='w-32 flex flex-col text-sm h-full py-2'>
           <button className='main-button py-1 flex items-center justify-center'><div className='w-3 mr-2'><Download color='#fff' /></div>Download</button>
-          {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary rounded py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
+          {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
         </div>}
       </div>
       {isEdittingPlugin ?

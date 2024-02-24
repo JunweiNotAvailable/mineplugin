@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Logo from '../asset/svgs/Logo'
 import './style.css'
 import { AppProps } from '../utils/Interfaces'
-import { storageUsername } from '../utils/Constants'
+import { logo, storageUsername } from '../utils/Constants'
 
 const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
 
@@ -22,7 +22,7 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
       {/* logo */}
       <Link className='logo' to={'/'}>
         <div style={{ width: 28, display: 'flex', alignItems: 'center', marginRight: '.5rem' }}><Logo /></div>
-        MC Picker
+        {logo}
       </Link>
       {/* nav menu */}
       {user === undefined ? <></>

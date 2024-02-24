@@ -12,6 +12,8 @@ import { build, updateSpigotFiles } from '../../utils/CodeBuild';
 const PluginDev: React.FC<AppProps> = ({ user }) => {
 
   const navigate = useNavigate();
+  const logsContainerRef = useRef(null);
+  const saveBtnRef = useRef(null);
   let timerRef = useRef<NodeJS.Timer | null>(null);
   const { username, pluginId } = useParams();
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
@@ -22,6 +24,21 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [isGeneratingFiles, setIsGeneratingFiles] = useState(false);
   const [isBuilding, setIsBuilding] = useState(false);
+  // console
+  const [isConsoleOpened, setIsConsoleOpened] = useState(false);
+  const [logs, setLogs] = useState<any[]>([]);
+  
+  // Handle keyboard event
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 's' && e.ctrlKey) {
+        e.preventDefault();
+        (saveBtnRef.current as unknown as HTMLElement).click();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Get the data from params
   useEffect(() => {
@@ -31,7 +48,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
       else if (user) {
         try {
           // Get owner
-          const userRes = await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&keys=['username']&values=['${username}']`);
+          const userRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=users&keys=['username']&values=['${username}']`);
           const userData = await userRes.json();
           // Page not found if user is not owner
           if (userData.username !== user?.username) {
@@ -40,7 +57,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
           }
           setOwner(userData);
           // Get plugin
-          const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
+          const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
           const pluginData = await pluginRes.json();
           setPlugin(pluginData);
           setCode(pluginData.code);
@@ -50,23 +67,25 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         }
       }
     })();
-    document.title = `${pluginId} | MC Picker`;
+    document.title = `${pluginId} | MinePlugin`;
   }, [user]);
 
   // Check building status every 5 seconds
   useEffect(() => {
     timerRef.current = setInterval(async () => {
-      const buildId = localStorage.getItem('MC-Picker-buildId');
+      const buildId = localStorage.getItem('MinePlugin-buildId');
       // Check status if still building
       if (buildId) {
         setIsGeneratingFiles(false);
         setIsBuilding(true);
         const statusRes = (await fetch(`${config.api.codeBuild}/track-build?buildId=${buildId}`));
         const status = (await statusRes.json()).status;
-        console.log(status);
+        // Get logs if still building
+        const logsRes = (await fetch(`${config.api.codeBuild}/stream-logs?buildName=mineplugin-build&buildId=${buildId}`));
+        setLogs(await logsRes.json());
         // Remove build id from local storage if completed
         if (status !== 'IN_PROGRESS') {
-          localStorage.removeItem('MC-Picker-buildId');
+          localStorage.removeItem('MinePlugin-buildId');
           setIsBuilding(false);
           // Update plugin to already built
           if (status === 'SUCCEEDED') {
@@ -74,7 +93,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                database: 'mc-picker',
+                database: 'mineplugin',
                 collection: 'plugins',
                 keys: ['owner', 'name'],
                 values: [owner?.username, plugin?.name],
@@ -98,6 +117,12 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     }
   }, []);
 
+  // Scroll to bottom if logs changes
+  useEffect(() => {
+    const container = (logsContainerRef.current as unknown as HTMLElement);
+    if (container) container.scrollTop = container.scrollHeight;
+  }, [logs]);
+
   // Add a plugin component code to original code
   const addPluginComponent = (comp: string, value: string) => {
     let addedCode = replaceLast(code, '}', value + '\n}');
@@ -112,7 +137,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        database: 'mc-picker',
+        database: 'mineplugin',
         collection: 'plugins',
         keys: ['owner', 'name'],
         values: [owner?.username, plugin?.name],
@@ -131,12 +156,14 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   const generateAndBuild = async () => {
     setIsBuilding(true);
     setIsGeneratingFiles(true);
+    setIsConsoleOpened(true);
+    setLogs([]);
     // store files to s3
-    const pluginName = extractPluginName(code) || '';
-    await updateSpigotFiles(pluginName, code);
+    const pluginClassName = extractPluginName(code) || '';
+    await updateSpigotFiles(owner?.username as string, pluginClassName, code);
     // build
-    const buildId = await build();
-    localStorage.setItem('MC-Picker-buildId', buildId);
+    const buildId = await build(owner?.username as string, pluginClassName);
+    localStorage.setItem('MinePlugin-buildId', buildId);
   }
 
   return (
@@ -160,21 +187,31 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
                 : ''
               }
             </div>
-            <button onClick={saveCode} className='py-1 px-4 border border-primary hover:border-primary-hover rounded disabled:text-gray-300 disabled:border-gray-300' disabled={code === plugin.code || isBuilding || isChecking || isSaving || isGeneratingFiles}>Save</button>
+            <button onClick={saveCode} ref={saveBtnRef} className='py-1 px-4 border border-primary hover:border-primary-hover disabled:text-gray-300 disabled:border-gray-300' disabled={code === plugin.code || isBuilding || isChecking || isSaving || isGeneratingFiles}>Save</button>
             <button onClick={generateAndBuild} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || plugin.alreadyBuilt}>Build</button>
           </div>
         </div>
         {/* dev body */}
         <main className='flex flex-1 scroller'>
-          <aside className='w-64 box-border p-4 sticky top-0'>
+          <aside className='w-64 box-border p-4 sticky top-0 shadow'>
             <div className='text-sm font-bold'>Add Plugin Components</div>
             <div className='mt-2 flex flex-col text-sm'>
-              {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='hover:bg-gray-100 mt-2 rounded py-1 px-2 text-left' key={key}>{key}</button>)}
+              {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='hover:bg-gray-100 mt-2 py-1 px-2 text-left' key={key}>{key}</button>)}
             </div>
           </aside>
-          <div className='flex-1 p-4'>
-            <div className='rounded overflow-hidden h-full'>
+          <div className='flex-1 p-1 min-w-0 flex flex-col'>
+            <div className='rounded overflow-hidden flex-1'>
               <CodeEditor code={code} setCode={setCode} />
+            </div>
+            <div className={`border-t border-gray-300 p-1 px-2 flex flex-col`}>
+              <div className='text-gray-500 text-sm font-bold cursor-pointer' onClick={() => setIsConsoleOpened(!isConsoleOpened)}><i className='fa-solid fa-terminal mr-2 text-xs' />Console</div>
+              <div className={`${isConsoleOpened ? 'pb-16 h-48 scroller' : 'h-0 overflow-hidden'}`} ref={logsContainerRef}>
+                {isGeneratingFiles && <div className='text-sm text-gray-300'>Generating files...</div>}
+                {logs.map((log, i) => <div className='mt-1 flex items-start text-sm'>
+                  <div className='text-gray-300'>{i + 1}</div>
+                  <div className={`ml-4${log.includes('Running command') ? ' text-blue-500' : log.includes('COMMAND_EXECUTION_ERROR') ? ' text-red-500' : ''}`}>{log}</div>
+                </div>)}
+              </div>
             </div>
           </div>
         </main>

@@ -54,9 +54,9 @@ const EditPage = () => {
     setIsGeneratingFiles(true);
     // store files to s3
     const pluginName = extractPluginName(code) || '';
-    await updateSpigotFiles(pluginName, code);
+    await updateSpigotFiles('', pluginName, code);
     // build
-    const buildId = await build();
+    const buildId = await build('', '');
     localStorage.setItem('MC-Picker-buildId', buildId);
   }
 

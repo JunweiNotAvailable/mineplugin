@@ -20,7 +20,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
 
   // Set document title
   useEffect(() => {
-    document.title = 'New plugin | MC Picker';
+    document.title = 'New plugin | MinePlugin';
   }, []);
 
   // Check if user is authenticated
@@ -58,7 +58,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          database: 'mc-picker',
+          database: 'mineplugin',
           collection: 'plugins',
           value: plugin,
         })
@@ -68,7 +68,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          database: 'mc-picker',
+          database: 'mineplugin',
           collection: 'users',
           keys: ['username'],
           values: [user?.username as string],

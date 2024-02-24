@@ -66,19 +66,19 @@ phases:
   build:
     commands:
       # download files from s3 to codebuild
-      - aws s3 cp s3://mc-picker-bucket/<project>.java ./<project>.java
-      - aws s3 cp s3://mc-picker-bucket/spigot-api-1.20.1.jar ./spigot-api.jar
-      - aws s3 cp s3://mc-picker-bucket/plugin.yml ./plugin.yml
-      - aws s3 cp s3://mc-picker-bucket/manifest.txt ./manifest.txt
+      - aws s3 cp s3://mineplugin-bucket/src/<USERNAME>/<PLUGIN_NAME>/<PLUGIN_NAME>.java ./<PLUGIN_NAME>.java
+      - aws s3 cp s3://mineplugin-bucket/public/spigot-api-1.20.1.jar ./spigot-api.jar
+      - aws s3 cp s3://mineplugin-bucket/src/<USERNAME>/<PLUGIN_NAME>/plugin.yml ./plugin.yml
+      - aws s3 cp s3://mineplugin-bucket/src/<USERNAME>/<PLUGIN_NAME>/manifest.txt ./manifest.txt
       
       # build
-      - javac -d classes -cp spigot-api.jar <project>.java
+      - javac -d classes -cp spigot-api.jar <PLUGIN_NAME>.java
       - cp plugin.yml classes/
-      - jar cfm <project>.jar manifest.txt -C classes .
+      - jar cfm <PLUGIN_NAME>.jar manifest.txt -C classes .
       - rm -f manifest.txt
       
       # copy the jar file to s3
-      - aws s3 cp <project>.jar s3://mc-picker-bucket/<project>.jar`;
+      - aws s3 cp <PLUGIN_NAME>.jar s3://mineplugin-bucket/src/<USERNAME>/<PLUGIN_NAME>/<PLUGIN_NAME>.jar`;
 
 
 // Extract plugin name from code string

@@ -29,7 +29,7 @@ const Login: React.FC<AppProps> = ({ user, setUser }) => {
       // Cognito sign in
       await Auth.signIn(username, password);
       // Get user data
-      const res = await fetch(`${config.api.mongodb}/get-single-item?database=mc-picker&collection=users&keys=['username']&values=['${username}']`);
+      const res = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=users&keys=['username']&values=['${username}']`);
       if (res.ok) {
         // Set app user to logged in user
         setUser(await res.json());
