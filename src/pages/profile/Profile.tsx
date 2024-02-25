@@ -69,12 +69,12 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
             <div className='ml-4 text-sm text-gray-400 font-light'>{profileUser.plugins.length} plugin{profileUser.plugins.length === 1 ? '' : 's'}</div>
           </div>
           <div className='mt-2 text-lg font-bold overflow-hidden text-ellipsis'>{profileUser.nickname}</div>
-          <div className='text-sm font-light text-gray-400 overflow-hidden text-ellipsis'>@{profileUser.username}</div>
+          <div className='text-sm text-gray-400 overflow-hidden text-ellipsis'>@{profileUser.username}</div>
         </div>
         {/* options */}
         <div className='flex-1 flex flex-col mt-4 overflow-auto'>
-          <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
-          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left hover:bg-gray-100 py-2 px-3 text-sm mt-2 flex items-center`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
+          <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left py-2 px-3 text-sm mt-2 flex items-center border border-transparent hover:border-primary`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
+          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left py-2 px-3 text-sm mt-2 flex items-center border border-transparent hover:border-primary`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
         </div>
       </aside>
       {/* main */}

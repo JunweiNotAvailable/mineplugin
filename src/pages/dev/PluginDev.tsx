@@ -17,6 +17,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   let timerRef = useRef<NodeJS.Timer | null>(null);
   const { username, pluginId } = useParams();
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [owner, setOwner] = useState<User | null | undefined>(undefined);
   const [code, setCode] = useState('');
   // building status
@@ -56,6 +57,10 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
             navigate('/pagenotfound');
             return;
           }
+          // Get plugins of users
+          const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${userData.username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
+          const data = await res.json();
+          setPlugins(data);
           setOwner(userData);
           // Get plugin
           const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
@@ -69,7 +74,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
       }
     })();
     document.title = `${pluginId} | MinePlugin`;
-  }, [user]);
+  }, [user, pluginId]);
 
   // Check building status every 5 seconds
   useEffect(() => {
@@ -114,7 +119,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         clearInterval(timerRef.current);
       }
     }
-  }, []);
+  }, [pluginId]);
 
   // Scroll to bottom if logs changes
   useEffect(() => {
@@ -140,8 +145,8 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         collection: 'plugins',
         keys: ['owner', 'name'],
         values: [owner?.username, plugin?.name],
-        fields: ["code", 'alreadyBuilt'],
-        field_values: [code, false]
+        fields: ["code", 'alreadyBuilt', 'lastUpdate'],
+        field_values: [code, false, new Date().toISOString()]
       })
     });
     setPlugin({ ...plugin, code: code, alreadyBuilt: false });
@@ -218,10 +223,14 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         </div>
         {/* dev body */}
         <main className='flex flex-1 scroller'>
-          <aside className='w-64 box-border p-4 sticky top-0 shadow'>
-            <div className='text-sm font-bold'>Add Plugin Components</div>
+          <aside className='w-64 box-border p-4 sticky top-0 shadow scroller'>
+            {/* <div className='text-sm font-bold'>Switch plugin</div>
             <div className='mt-2 flex flex-col text-sm'>
-              {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='hover:bg-gray-100 mt-2 py-1 px-2 text-left' key={key}>{key}</button>)}
+              {plugins.map(plugin => <button onClick={() => navigate(`/${username}/${plugin.name}/dev`)} className='border border-transparent hover:border-primary mt-1 py-1 px-2 text-left' key={plugin.name}>{plugin.name}</button>)}
+            </div> */}
+            <div className='text-sm font-bold'>Insert code</div>
+            <div className='mt-2 flex flex-col text-sm'>
+              {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='border border-transparent hover:border-primary mt-1 py-1 px-2 text-left' key={key}>{key}</button>)}
             </div>
           </aside>
           <div className='flex-1 p-1 min-w-0 flex flex-col'>

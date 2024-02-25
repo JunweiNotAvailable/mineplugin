@@ -27,3 +27,9 @@ export const replaceLast = (str: string, search: string, replacement: string) =>
 
   return replacedString;
 }
+
+// Format date of given string
+export const getFormattedDate = (date: string) => {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
+}

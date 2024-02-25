@@ -25,7 +25,7 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
     (async () => {
       const keys = isAuthUser ? `['owner']` : `['owner', 'isPublic']`;
       const values = isAuthUser ? `['${profileUser.username}']` : `['${profileUser.username}', True]`;
-      const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=${keys}&values=${values}&page=${page}&per_page=100`, { headers: { 'Content-Type': 'application/json' } }));
+      const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=${keys}&values=${values}&page=${page}&per_page=100&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
       const data = await res.json();
       setPlugins(data);
     })();
@@ -46,9 +46,27 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
   // Delete the plugin
   const deletePlugin = async () => {
     setIsDeleting(true);
-    // Delete data from database
-    // Update user
-    // Delete files in s3
+    try {
+      // Delete data from database
+      await fetch(`${config.api.mongodb}/delete-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${deletingPlugin?.owner}', '${deletingPlugin?.name}']`, { method: 'DELETE' });
+      // Update user
+      await fetch(`${config.api.mongodb}/update-single-item`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          database: 'mineplugin',
+          collection: 'users',
+          keys: ['username'],
+          values: [profileUser.username],
+          fields: ['plugins'],
+          field_values: profileUser.plugins.filter(p => p !== deletingPlugin?.name)
+        })
+      });
+      // Delete files in s3
+      await fetch(`${config.api.s3}/access-file?bucket=mineplugin-bucket&path=src/${deletingPlugin?.owner}/${deletingPlugin?.name}&is_folder=True`, { method: 'DELETE' });
+    } catch (error) {
+      console.log(error)
+    }
     // Update states
     setDeletingPlugin(null);
     setIsDeleting(false);
@@ -75,20 +93,20 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
               <div className='overflow-hidden whitespace-nowrap text-ellipsis text-sm text-gray-400 font-light'>{plugin.description}</div>
             </div>
             {/* options */}
-            <div className='w-10 flex items-center justify-center'>
+            {isAuthUser && <div className='w-10 flex items-center justify-center'>
               <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-sm text-red-400' /></button>
-            </div>
+            </div>}
           </div>)}
         </div>
       </div>
 
       {/* delete pupop */}
-      {deletingPlugin && <div className='z-50 fixed w-dvw h-dvh top-0 left-0 flex items-center justify-center' style={{ background: '#0001' }}>
+      {deletingPlugin && <div className='z-50 fixed w-dvw h-dvh top-0 left-0 flex items-center justify-center' style={{ background: '#0002' }}>
         <div className='delete-popup max-w-md w-5/6 bg-white shadow-xl rounded-sm p-4'>
           <div className='text-lg'>Delete <span className='font-bold'>{deletingPlugin.name}</span></div>
           <div className='text-base mt-2'>Once it is deleted, it will be gone forever</div>
           <div className='mt-4 flex justify-end text-sm'>
-            <button onClick={() => setDeletingPlugin(null)} className='border border-primary text-primary py-1 px-3'>Cancel</button>
+            <button onClick={() => setDeletingPlugin(null)} className='border border-secondary text-primary py-1 px-3'>Cancel</button>
             <button onClick={deletePlugin} className='text-white bg-red-400 py-1 px-4 font-bold ml-2 disabled:bg-red-300 disabled:px-6' disabled={isDeleting}>{isDeleting ? <Spinner color='#fff' /> : 'Delete'}</button>
           </div>
         </div>

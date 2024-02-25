@@ -107,7 +107,7 @@ const NewPlugin: React.FC<AppProps> = ({ user }) => {
           </div>
           <div className='text-sm mt-3 flex items-center cursor-pointer' onClick={() => setIsPublic(!isPublic)}>
             <div className={`mr-4 w-4 h-4 flex items-center justify-center border rounded-full border-gray-300 text-white${!isPublic ? ' bg-blue-400' : ''}`}>{!isPublic && <i className='fa-solid fa-check' style={{ fontSize: 10 }} />}</div>
-            Private
+            Private <span className='text-gray-400 text-xs ml-2'>(Only you can see and download it)</span>
           </div>
           <div className='flex justify-end mt-8'>
             <button onClick={submit} className={`main-button text-sm py-1.5 px-4 disabled:bg-secondary${isCreating ? ' px-8 py-2' : ''}`} disabled={!areValidInputs || isCreating}>{isCreating ? <Spinner size={16} color='#fff' /> : 'Create plugin'}</button>
