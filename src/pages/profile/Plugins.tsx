@@ -9,9 +9,10 @@ import Spinner from '../../components/Spinner';
 interface Props {
   profileUser: User
   isAuthUser: boolean
+  authUser: User | null | undefined
 }
 
-const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
+const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser }) => {
 
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
@@ -72,6 +73,16 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
     setIsDeleting(false);
   }
 
+  // Star a plugin
+  const star = (plugin: Plugin) => {
+    if (!authUser) return;
+    if (!plugin.starred?.includes(authUser.username)) {
+      setPlugins(prev => prev.map(p => p.name === plugin.name ? {...plugin, starred: plugin.starred ? [...plugin.starred, authUser.username] : [authUser.username] } : p));
+    } else {
+      setPlugins(prev => prev.map(p => p.name === plugin.name ? {...plugin, starred: plugin.starred?.filter(u => u !== authUser.username) } : p));
+    }
+  }
+
   return (
     <>
       <div>
@@ -93,8 +104,9 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser }) => {
               <div className='overflow-hidden whitespace-nowrap text-ellipsis text-sm text-gray-400 font-light'>{plugin.description}</div>
             </div>
             {/* options */}
-            {isAuthUser && <div className='w-10 flex items-center justify-center'>
-              <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-sm text-red-400' /></button>
+            {isAuthUser && <div className='flex items-center justify-center'>
+              {/* <button onClick={() => star(plugin)} className='w-7 h-7 rounded-full hover:bg-gray-100'><i className={`fa-star text-sm${(plugin.starred && plugin.starred.includes(authUser?.username || '')) ? ' fa-solid text-yellow-400' : ' fa-regular text-gray-400'}`} /></button> */}
+              <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 ml-2 rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-sm text-gray-400' /></button>
             </div>}
           </div>)}
         </div>

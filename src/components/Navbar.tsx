@@ -30,7 +30,7 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
           <Link to={'/login'} className='main-button' style={{ padding: '.3rem 1rem', fontSize: '.9rem' }}>Log in</Link>
           :
           <nav>
-            <button onClick={logout}>logout</button>
+            <button className='font-bold text-sm px-2 text-gray-400 hover:text-gray-600' onClick={logout}>Log out</button>
           </nav>}
     </header>
   )

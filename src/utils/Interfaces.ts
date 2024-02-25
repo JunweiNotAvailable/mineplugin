@@ -10,6 +10,7 @@ export interface User {
   nickname: string
   plugins: string[]
   picture?: string
+  favorites?: string[]
 }
 
 export interface Plugin {
@@ -25,4 +26,5 @@ export interface Plugin {
   downloads: number
   downloadUsers?: string[]
   alreadyBuilt?: boolean
+  starred?: string[]
 }

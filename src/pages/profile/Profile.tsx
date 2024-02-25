@@ -70,6 +70,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           </div>
           <div className='mt-2 text-lg font-bold overflow-hidden text-ellipsis'>{profileUser.nickname}</div>
           <div className='text-sm text-gray-400 overflow-hidden text-ellipsis'>@{profileUser.username}</div>
+          {isAuthUser && <button className='my-2 text-sm py-0.5 border border-gray-300 hover:border-gray-400 w-full'>Edit</button>}
         </div>
         {/* options */}
         <div className='flex-1 flex flex-col mt-4 overflow-auto'>
@@ -84,7 +85,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           {option === 'Plugin' ? 'Plugins' : option}
         </div>
         <div className='mt-4'>
-          {option === 'Plugins' ? <Plugins profileUser={profileUser} isAuthUser={isAuthUser} />
+          {option === 'Plugins' ? <Plugins profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
           : option === 'Settings' ? <Settings />
           : option === 'Plugin' ? <PluginOverview profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
           : <></>}
