@@ -57,11 +57,12 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
             navigate('/pagenotfound');
             return;
           }
-          // Get plugins of users
-          const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${userData.username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
-          const data = await res.json();
-          setPlugins(data);
-          setOwner(userData);
+          // // Get plugins of users
+          // const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${userData.username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
+          // const data = await res.json();
+          // setPlugins(data);
+          // setOwner(userData);
+          
           // Get plugin
           const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
           const pluginData = await pluginRes.json();

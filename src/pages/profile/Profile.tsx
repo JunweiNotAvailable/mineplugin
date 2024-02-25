@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { AppProps, User } from '../../utils/Interfaces'
+import { AppProps, Plugin, User } from '../../utils/Interfaces'
 import { useParams } from 'react-router'
 import { config } from '../../utils/Config';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -9,6 +9,8 @@ import Cog from '../../asset/svgs/Cog';
 import Plugins from './Plugins';
 import Settings from './Settings';
 import PluginOverview from './PluginOverview';
+import EditProfile from './EditProfile';
+import PluginDefaultIcon from '../../components/PluginDefaultIcon';
 
 interface Props extends AppProps {
   option?: string
@@ -20,14 +22,15 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
   const { pathname } = useLocation();
   const { username } = useParams();
   const [profileUser, setProfileUser] = useState<User | undefined>(undefined);
+  const [recentPlugins, setRecentPlugins] = useState<Plugin[]>([]);
   const [option, setOption] = useState(props.option || 'Plugins'); // The selected option on sidebar
   const [isAuthUser, setIsAuthUser] = useState(false); // If the profile user is the visitor
   const [isLoadingProfileUser, setIsLoadingProfileUser] = useState(true);
 
-  // Load the profile user
   useEffect(() => {
     (async () => {
       try {
+        // Load the profile user
         const res = (await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=users&keys=['username']&values=['${username}']`));
         if (res.ok) {
           const userData = await res.json();
@@ -36,11 +39,15 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           setIsLoadingProfileUser(false);
           document.title = `${userData.username} | MinePlugin`
         }
+        // Load recent plugins
+        const pluginsRes = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
+        const data = await pluginsRes.json();
+        setRecentPlugins(data);
       } catch (error) {
         navigate('/pagenotfound');
       }
     })();
-  }, [username, user]);
+  }, [username, user, pathname]);
 
   // Update option when route changes
   useEffect(() => {
@@ -70,12 +77,14 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           </div>
           <div className='mt-2 text-lg font-bold overflow-hidden text-ellipsis'>{profileUser.nickname}</div>
           <div className='text-sm text-gray-400 overflow-hidden text-ellipsis'>@{profileUser.username}</div>
-          {isAuthUser && <button className='my-2 text-sm py-0.5 border border-gray-300 hover:border-gray-400 w-full'>Edit</button>}
+          {isAuthUser && <button onClick={() => navigate(`/${username}/profile`)} className='my-2 text-sm py-0.5 border border-gray-300 hover:border-gray-400 w-full'>Edit</button>}
         </div>
         {/* options */}
         <div className='flex-1 flex flex-col mt-4 overflow-auto'>
           <button onClick={() => navigate(`/${username}`)} className={`${option === 'Plugins' ? 'bg-gray-100 ' : ''}text-left py-2 px-3 text-sm mt-2 flex items-center border border-transparent hover:border-primary`}><div className='mr-3 w-4'><PluginsIcon /></div>Plugins</button>
-          {isAuthUser && <button onClick={() => navigate(`/${username}/settings`)} className={`${option === 'Settings' ? 'bg-gray-100 ' : ''}text-left py-2 px-3 text-sm mt-2 flex items-center border border-transparent hover:border-primary`}><div className='mr-3 w-4'><Cog /></div>Settings</button>}
+          <div className='text-xs font-bold mt-2'>Recent</div>
+          {recentPlugins.map(plugin => <button onClick={() => navigate(`/${username}/${plugin.name}`)} key={`btn-${plugin.name}`} className='text-left py-2 px-3 text-sm mt-2 flex items-center border border-transparent hover:border-primary'><div className='mr-3 w-5'>{plugin.picture ? <></> : <PluginDefaultIcon className="rounded" />}</div>{plugin.name}</button>)}
+          <div className='border-t my-4' />
         </div>
       </aside>
       {/* main */}
@@ -86,14 +95,15 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
         </div>
         <div className='mt-4'>
           {option === 'Plugins' ? <Plugins profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
-          : option === 'Settings' ? <Settings />
-          : option === 'Plugin' ? <PluginOverview profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
-          : <></>}
+            : option === 'Settings' ? <Settings />
+            : option === 'Plugin' ? <PluginOverview profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
+            : option === 'Profile' ? <EditProfile user={user} setUser={setUser} />
+            : <></>}
         </div>
       </main>
     </div>
-    : 
-    <></>
+      :
+      <></>
   )
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Plugin, User } from '../../utils/Interfaces'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { config } from '../../utils/Config'
 import Pickaxe from '../../asset/svgs/Pickaxe'
 import Download from '../../asset/svgs/Download'
@@ -20,6 +20,7 @@ interface Props {
 const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) => {
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { username, pluginId } = useParams();
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
   const [tempName, setTempName] = useState('');
@@ -56,7 +57,7 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
       }
     })();
     document.title = `${pluginId} | MinePlugin`;
-  }, []);
+  }, [pathname]);
 
   // Reset inputs when click edit button
   useEffect(() => {

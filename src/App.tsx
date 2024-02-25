@@ -55,10 +55,11 @@ function App() {
 
           {/* main routes */}
           <Route path='/' element={user === null ? <Landing /> : user ? <Home {...appProps} /> : <></>} /> {/* to home page if user logged in otherwise go to landing page */}
-          <Route path='/:username' element={<Profile {...appProps} />} />
-          <Route path='/:username/:pluginId' element={<Profile {...appProps} option='Plugin' />} />
           <Route path='/new' element={<NewPlugin {...appProps} />} />
+          <Route path='/:username' element={<Profile {...appProps} />} />
+          <Route path='/:username/profile' element={<Profile {...appProps} option='Profile' />} />
           <Route path='/:username/settings' element={<Profile {...appProps} option='Settings' />} />
+          <Route path='/:username/:pluginId' element={<Profile {...appProps} option='Plugin' />} />
           <Route path='/:username/:pluginId/dev' element={<PluginDev {...appProps} />} />
 
           {/* default */}

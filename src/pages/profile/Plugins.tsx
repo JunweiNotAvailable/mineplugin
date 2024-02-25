@@ -5,6 +5,7 @@ import { AppProps, Plugin, User } from '../../utils/Interfaces';
 import { config } from '../../utils/Config';
 import Pickaxe from '../../asset/svgs/Pickaxe';
 import Spinner from '../../components/Spinner';
+import { getFormattedDate } from '../../utils/Functions';
 
 interface Props {
   profileUser: User
@@ -100,8 +101,12 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
             </div>
             {/* name & description */}
             <div className='ml-4 flex-1 min-w-0 cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
-              <div className=''>{plugin.name}</div>
+              <div className=''>{plugin.name}<span className='text-sm text-gray-400 ml-4 font-light'>{plugin.version}</span></div>
               <div className='overflow-hidden whitespace-nowrap text-ellipsis text-sm text-gray-400 font-light'>{plugin.description}</div>
+            </div>
+            <div className='flex flex-col items-end'>
+              <div className='text-xs text-gray-400 font-light'>Last update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'No update'}</div>
+              <div className='text-xs text-gray-400 font-light'>Downloads: {plugin.downloads}</div>
             </div>
             {/* options */}
             {isAuthUser && <div className='flex items-center justify-center'>
