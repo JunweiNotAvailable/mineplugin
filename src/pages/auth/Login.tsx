@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { storageUsername } from '../../utils/Constants';
 import { Auth } from 'aws-amplify';
 import { config } from '../../utils/Config';
+import Spinner from '../../components/Spinner';
 
 const Login: React.FC<AppProps> = ({ user, setUser }) => {
 
@@ -56,7 +57,7 @@ const Login: React.FC<AppProps> = ({ user, setUser }) => {
           {errorMessage && <div className='mt-3 text-sm text-center text-red-400'>{errorMessage}</div>}
           <input placeholder='Username or Email' className='main-input mt-4' value={username} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)} />
           <input placeholder='Password' type='password' className='main-input mt-3' value={password} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} />
-          <button className='main-button mt-4 py-1 disabled:bg-secondary' onClick={login} disabled={!areValidInputs}>Log in</button>
+          <button className={`main-button mt-4 py-1 flex justify-center disabled:bg-secondary${loading ? ' py-2' : ''}`} onClick={login} disabled={!areValidInputs || loading}>{loading ? <Spinner color='#fff' /> : 'Log in'}</button>
           <Link to={'/signup'} className='text-center mt-4 py-1 hover:text-primary-hover'>Don't have account? Sign up</Link>
         </div>
       </div>

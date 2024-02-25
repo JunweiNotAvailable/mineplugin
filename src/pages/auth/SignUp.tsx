@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../asset/svgs/Logo';
 import { Auth } from 'aws-amplify';
 import { config } from '../../utils/Config';
+import Spinner from '../../components/Spinner';
 
 interface Props extends AppProps {
   codeIsSent?: boolean
@@ -120,7 +121,7 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
             <input placeholder='Confirm password' type='password' className='main-input mt-3' value={password2} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setPassword2(e.target.value)} />
           </>}
           {codeIsSent && <input placeholder='Verification code' className='main-input mt-3' value={code} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value)} />}
-          <button className='main-button mt-4 py-1 disabled:bg-secondary' onClick={codeIsSent ? confirmSignUp : signUp} disabled={(!codeIsSent && !areValidInputs)}>{codeIsSent ? 'Sign up' : 'Send code'}</button>
+          <button className={`main-button mt-4 py-1 disabled:bg-secondary flex justify-center${(isSending || isConfirming) ? ' py-2' : ''}`} onClick={codeIsSent ? confirmSignUp : signUp} disabled={(!codeIsSent && !areValidInputs) || (isSending || isConfirming)}>{(isSending || isConfirming) ? <Spinner color='#fff' /> : (codeIsSent ? 'Sign up' : 'Send code')}</button>
           <Link to={'/login'} className='text-center mt-4 py-1 hover:text-primary-hover'>Already have an account? Log in</Link>
         </div>
       </div>
