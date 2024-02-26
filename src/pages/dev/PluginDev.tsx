@@ -225,11 +225,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         {/* dev body */}
         <main className='flex flex-1 scroller'>
           <aside className='w-64 box-border p-4 sticky top-0 shadow scroller'>
-            {/* <div className='text-sm font-bold'>Switch plugin</div>
-            <div className='mt-2 flex flex-col text-sm'>
-              {plugins.map(plugin => <button onClick={() => navigate(`/${username}/${plugin.name}/dev`)} className='border border-transparent hover:border-primary mt-1 py-1 px-2 text-left' key={plugin.name}>{plugin.name}</button>)}
-            </div> */}
-            <div className='text-sm font-bold'>Insert code</div>
+            <div className='text-sm font-bold'>Plugin components</div>
             <div className='mt-2 flex flex-col text-sm'>
               {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='border border-transparent hover:border-primary mt-1 py-1 px-2 text-left' key={key}>{key}</button>)}
             </div>

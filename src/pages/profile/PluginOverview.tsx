@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Plugin, User } from '../../utils/Interfaces'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { config } from '../../utils/Config'
@@ -9,7 +9,7 @@ import MarkdownEditor from '../../components/MarkdownEditor'
 import { extractPluginName } from '../../utils/Code'
 import { downloadFile } from '../../utils/CodeBuild'
 import Spinner from '../../components/Spinner'
-import { getFormattedDate } from '../../utils/Functions'
+import { deleteImage, getFormattedDate, getImageUrl, uploadImage } from '../../utils/Functions'
 
 interface Props {
   profileUser: User
@@ -20,9 +20,11 @@ interface Props {
 const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) => {
 
   const navigate = useNavigate();
+  const pictureInputRef = useRef(null);
   const { pathname } = useLocation();
   const { username, pluginId } = useParams();
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
+  const [pluginImageUrl, setPluginImageUrl] = useState<string>('');
   const [tempName, setTempName] = useState('');
   const [tempDescription, setTempDescription] = useState('');
   const [tempDetails, setTempDetails] = useState('');
@@ -50,7 +52,13 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
       try {
         const res = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['name', 'owner']&values=['${encodeURIComponent(pluginId as string)}', '${username}']`);
         if (res.ok) {
-          setPlugin(await res.json());
+          const data = await res.json();
+          setPlugin(data);
+          // Load plugin image
+          if (data.picture) {
+            const url = await getImageUrl(`src/${username}/${pluginId}/${data.picture}`);
+            setPluginImageUrl(url);
+          }
         }
       } catch (error) {
         console.log('Failed getting plugin')
@@ -144,13 +152,62 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
     setIsDeleting(false);
   }
 
+  // Change plugin's image
+  const changePicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file || !plugin) return;
+    if (plugin?.picture) {
+      deleteImage(`src/${username}/${pluginId}/${plugin.picture}`);
+    }
+    // Upload picture
+    const { imageName, urlRes } = await uploadImage(`src/${username}/${pluginId}`, file);
+    setPluginImageUrl(urlRes);
+    const newPlugin: Plugin = { ...plugin, picture: imageName };
+    setPlugin(newPlugin);
+    // Update user
+    await fetch(`${config.api.mongodb}/update-single-item`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        database: 'mineplugin',
+        collection: 'plugins',
+        keys: ['owner', 'name'],
+        values: [username, pluginId],
+        fields: ['picture'],
+        field_values: [imageName]
+      })
+    });
+  }
+
+  // Delete plugin's picture
+  const deletePicture = async () => {
+    // Delete image
+    setPluginImageUrl('');
+    await deleteImage(`src/${username}/${pluginId}/${plugin?.picture}`);
+    // Update plugin
+    await fetch(`${config.api.mongodb}/update-single-item`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        database: 'mineplugin',
+        collection: 'plugins',
+        keys: ['owner', 'name'],
+        values: [username, pluginId],
+        fields: ['picture'],
+        field_values: ['']
+      })
+    });
+  }
+
   return (
     <>
       {plugin ? <div className='py-8'>
         {/* header */}
         <div className='flex items-center'>
-          <div className='w-24 h-24 rounded-2xl flex bg-gray-200 items-center justify-center'>
-            {plugin.picture ? <img /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
+          <div className={`w-24 h-24 cursor-pointer relative rounded-2xl flex overflow-hidden${pluginImageUrl ? '' : ' bg-gray-200'} items-center justify-center`} onClick={() => (pictureInputRef.current as any as HTMLElement).click()}>
+            {pluginImageUrl ? <img className='w-full h-full object-cover object-center' src={pluginImageUrl} /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
+            <input type='file' className='absolute' ref={pictureInputRef} style={{ width: '0', height: '0' }} accept="image/*" onInput={changePicture} />
           </div>
           <div className='flex-1 min-w-0 ml-6 mr-4 py-2 flex flex-col'>
             {isEdittingPlugin ?

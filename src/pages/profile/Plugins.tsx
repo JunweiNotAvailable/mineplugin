@@ -5,7 +5,7 @@ import { AppProps, Plugin, User } from '../../utils/Interfaces';
 import { config } from '../../utils/Config';
 import Pickaxe from '../../asset/svgs/Pickaxe';
 import Spinner from '../../components/Spinner';
-import { getFormattedDate } from '../../utils/Functions';
+import { getFormattedDate, getImageUrl } from '../../utils/Functions';
 
 interface Props {
   profileUser: User
@@ -18,6 +18,7 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
   const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [urls, setUrls] = useState<any>({});
   const [page, setPage] = useState(1);
   const [deletingPlugin, setDeletingPlugin] = useState<Plugin | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -44,6 +45,20 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, []);
+
+  // Load images when plugins loaded
+  useEffect(() => {
+    (async () => {
+      let newUrls: any = {};
+      for (const plugin of plugins) {
+        if (plugin.picture) {
+          const url = await getImageUrl(`src/${profileUser.username}/${plugin.name}/${plugin.picture}`);
+          newUrls[plugin.name] = url;
+        }
+      }
+      setUrls(newUrls);
+    })();
+  }, [plugins]);
 
   // Delete the plugin
   const deletePlugin = async () => {
@@ -78,9 +93,9 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
   const star = (plugin: Plugin) => {
     if (!authUser) return;
     if (!plugin.starred?.includes(authUser.username)) {
-      setPlugins(prev => prev.map(p => p.name === plugin.name ? {...plugin, starred: plugin.starred ? [...plugin.starred, authUser.username] : [authUser.username] } : p));
+      setPlugins(prev => prev.map(p => p.name === plugin.name ? { ...plugin, starred: plugin.starred ? [...plugin.starred, authUser.username] : [authUser.username] } : p));
     } else {
-      setPlugins(prev => prev.map(p => p.name === plugin.name ? {...plugin, starred: plugin.starred?.filter(u => u !== authUser.username) } : p));
+      setPlugins(prev => prev.map(p => p.name === plugin.name ? { ...plugin, starred: plugin.starred?.filter(u => u !== authUser.username) } : p));
     }
   }
 
@@ -88,16 +103,15 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
     <>
       <div>
         {/* search bar */}
-        <div className='flex items-center justify-between py-2'>
+        {/* <div className='flex items-center justify-end py-2'>
           <input className='main-input text-sm flex-1 py-1.5 max-w-80' placeholder='Search' value={searchInput} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)} />
-          {isAuthUser && <Link to={'/new'} className='main-button ml-4 text-sm flex items-center py-1.5 px-4'><div className='w-3 mr-2 *:*:fill-white'><PluginsIcon /></div>New</Link>}
-        </div>
+        </div> */}
         {/* my plugins */}
         <div className="mt-8">
           {plugins.map(plugin => <div className='flex items-center mt-4 py-1' key={`plugin-${plugin.name}`}>
             {/* image */}
-            <div className='plugin-image w-10 aspect-square flex items-center justify-center bg-gray-200 rounded-lg'>
-              {plugin.picture ? <img /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
+            <div className={`plugin-image w-10 aspect-square overflow-hidden rounded flex items-center justify-center${urls[plugin.name] ? '' : ' bg-gray-200'} rounded-lg`}>
+              {urls[plugin.name] ? <img className='w-full h-full object-cover object-center' src={urls[plugin.name]} /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
             </div>
             {/* name & description */}
             <div className='ml-4 flex-1 min-w-0 cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
