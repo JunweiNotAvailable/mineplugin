@@ -97,7 +97,7 @@ const Profile: React.FC<Props> = ({ user, setUser, ...props }) => {
           {option === 'Plugins' ? <Plugins profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
             : option === 'Settings' ? <Settings />
             : option === 'Plugin' ? <PluginOverview profileUser={profileUser} isAuthUser={isAuthUser} authUser={user} />
-            : option === 'Profile' ? <EditProfile user={user} setUser={setUser} />
+            : option === 'Profile' ? <EditProfile user={user} setUser={setUser} isAuthUser={isAuthUser} />
             : <></>}
         </div>
       </main>

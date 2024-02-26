@@ -104,13 +104,14 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
               <div className=''>{plugin.name}<span className='text-sm text-gray-400 ml-4 font-light'>{plugin.version}</span></div>
               <div className='overflow-hidden whitespace-nowrap text-ellipsis text-sm text-gray-400 font-light'>{plugin.description}</div>
             </div>
-            <div className='flex flex-col items-end'>
+            <div className='flex flex-col items-end cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
               <div className='text-xs text-gray-400 font-light'>Last update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'No update'}</div>
               <div className='text-xs text-gray-400 font-light'>Downloads: {plugin.downloads}</div>
             </div>
             {/* options */}
-            {isAuthUser && <div className='flex items-center justify-center'>
+            {isAuthUser && <div className='flex items-center justify-center ml-2'>
               {/* <button onClick={() => star(plugin)} className='w-7 h-7 rounded-full hover:bg-gray-100'><i className={`fa-star text-sm${(plugin.starred && plugin.starred.includes(authUser?.username || '')) ? ' fa-solid text-yellow-400' : ' fa-regular text-gray-400'}`} /></button> */}
+              <button onClick={() => navigate(`/${profileUser.username}/${plugin.name}/dev`)} className='w-7 h-7 ml-2 rounded-full hover:bg-gray-100'><i className={`fa-solid fa-code text-sm text-gray-400`} /></button>
               <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 ml-2 rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-sm text-gray-400' /></button>
             </div>}
           </div>)}
