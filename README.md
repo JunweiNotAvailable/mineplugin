@@ -4,8 +4,6 @@ MinePlugin is available here: https://mcpicker.netlify.app
 ## What is MinePlugin?
 This is an **online code editor** that you can create Minecraft plugins.
 It is a web app built with [React](https://react.dev/) and [AWS](https://aws.amazon.com/).
-<img width="640" alt="" src="https://github.com/JunweiNotAvailable/mc-picker/assets/89463326/5442b94d-d416-489d-842b-0bba431ea581" >
-
 
 ## Why did I start?
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
