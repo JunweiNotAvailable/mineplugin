@@ -4,6 +4,8 @@ MinePlugin is available here: https://mineplugin.netlify.app
 ## What is MinePlugin?
 This is an **online code editor** that you can create Minecraft plugins.
 It is a web app built with [React](https://react.dev/) and [AWS](https://aws.amazon.com/).
+<img alt="" width="640" src="https://github.com/JunweiNotAvailable/mineplugin/assets/89463326/06c9fb93-d1c3-4629-8333-c7db315d20e2">
+
 
 ## Why did I start?
 Developers build Minecraft plugins on their computers. But what if you don't have access to your computer at the moment?
