@@ -8,6 +8,7 @@ import CodeEditor from '../../components/CodeEditor';
 import { replaceLast } from '../../utils/Functions';
 import Logo from '../../asset/svgs/Logo';
 import { build, downloadFile, updateSpigotFiles } from '../../utils/CodeBuild';
+import DocSidebar from './DocSidebar';
 
 const PluginDev: React.FC<AppProps> = ({ user }) => {
 
@@ -17,7 +18,6 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   let timerRef = useRef<NodeJS.Timer | null>(null);
   const { username, pluginId } = useParams();
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
-  const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [owner, setOwner] = useState<User | null | undefined>(undefined);
   const [code, setCode] = useState('');
   // building status
@@ -56,13 +56,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
           if (userData.username !== user?.username) {
             navigate('/pagenotfound');
             return;
-          }
-          // // Get plugins of users
-          // const res = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${userData.username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
-          // const data = await res.json();
-          // setPlugins(data);
-          // setOwner(userData);
-          
+          }          
           // Get plugin
           const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
           const pluginData = await pluginRes.json();
@@ -200,7 +194,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     plugin ?
       <div className='flex-1 flex flex-col scroller'>
         {/* header */}
-        <div className='flex items-center justify-between py-4 px-8 shadow sticky top-0'>
+        <div className='flex items-center justify-between py-4 px-8 shadow sticky top-0 z-10'>
           <div className='flex items-center font-bold cursor-pointer' onClick={() => navigate(`/${username}/${pluginId}`)}>
             <div className='w-4 mr-2'><PluginsIcon /></div>
             {plugin.name}
@@ -224,12 +218,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         </div>
         {/* dev body */}
         <main className='flex flex-1 scroller'>
-          <aside className='w-64 box-border p-4 sticky top-0 shadow scroller'>
-            <div className='text-sm font-bold'>Plugin components</div>
-            <div className='mt-2 flex flex-col text-sm'>
-              {Array.from(codeSet.Components).map(([key, value]) => <button onClick={() => addPluginComponent(key, value)} className='border border-transparent hover:border-primary mt-1 py-1 px-2 text-left' key={key}>{key}</button>)}
-            </div>
-          </aside>
+          <DocSidebar fetchLink='https://api.github.com/repos/Bukkit/Bukkit/contents/src/main/java/org/bukkit' parentDir='' />
           <div className='flex-1 p-1 min-w-0 flex flex-col'>
             <div className='text-sm px-1'>{extractPluginName(code)}.java</div>
             <div className='rounded overflow-hidden flex-1 mt-1'>
