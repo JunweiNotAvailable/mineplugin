@@ -13,6 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  overflow: auto;
 }
 .app-body {
   flex: 1;

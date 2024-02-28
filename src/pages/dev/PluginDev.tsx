@@ -83,7 +83,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         const statusRes = (await fetch(`${config.api.codeBuild}/track-build?buildId=${buildId}`));
         const status = (await statusRes.json()).status;
         // Remove build id from local storage if completed
-        if (status !== 'IN_PROGRESS') {
+        if (status !== 'IN_PROGRESS' && plugin) {
           localStorage.removeItem('MinePlugin-buildId');
           setIsBuilding(false);
           // Update plugin to already built
@@ -99,7 +99,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
               field_values: [true, []]
             })
           });
-          setPlugin({ ...plugin as Plugin, alreadyBuilt: true });
+          setPlugin({ ...plugin, alreadyBuilt: true });
         }
         // Get logs if still building
         const logsRes = (await fetch(`${config.api.codeBuild}/stream-logs?buildName=mineplugin-build&buildId=${buildId}`));
