@@ -56,7 +56,8 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
           if (userData.username !== user?.username) {
             navigate('/pagenotfound');
             return;
-          }          
+          }
+          setOwner(userData);
           // Get plugin
           const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
           const pluginData = await pluginRes.json();
@@ -82,7 +83,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
         const statusRes = (await fetch(`${config.api.codeBuild}/track-build?buildId=${buildId}`));
         const status = (await statusRes.json()).status;
         // Remove build id from local storage if completed
-        if (status !== 'IN_PROGRESS') {
+        if (status !== 'IN_PROGRESS' && plugin) {
           localStorage.removeItem('MinePlugin-buildId');
           setIsBuilding(false);
           // Update plugin to already built
@@ -98,7 +99,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
               field_values: [true, []]
             })
           });
-          setPlugin({ ...plugin as Plugin, alreadyBuilt: true });
+          setPlugin({ ...plugin, alreadyBuilt: true });
         }
         // Get logs if still building
         const logsRes = (await fetch(`${config.api.codeBuild}/stream-logs?buildName=mineplugin-build&buildId=${buildId}`));
@@ -121,12 +122,6 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     const container = (logsContainerRef.current as unknown as HTMLElement);
     if (container) container.scrollTop = container.scrollHeight;
   }, [logs]);
-
-  // Add a plugin component code to original code
-  const addPluginComponent = (comp: string, value: string) => {
-    let addedCode = replaceLast(code, '}', value + '\n}');
-    setCode(addedCode);
-  }
 
   // Save the code
   const saveCode = async () => {
@@ -159,6 +154,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     setLogs([]);
     // store files to s3
     const pluginClassName = extractPluginName(code) || '';
+    console.log(owner?.username as string, pluginClassName, code)
     await updateSpigotFiles(owner?.username as string, pluginClassName, code);
     // build
     const buildId = await build(owner?.username as string, pluginClassName);
@@ -169,7 +165,7 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   const download = async () => {
     if (!plugin || !owner) return;
     setIsDownloading(true);
-    const pluginName = extractPluginName(plugin.code) || '';
+    const pluginName = extractPluginName(code) || '';
     await downloadFile(`src/${owner.username}/${pluginName}/${pluginName}.jar`, `${pluginName}.jar`);
     // Update download users & numbers
     if (!plugin.downloadUsers?.includes(owner.username)) {
