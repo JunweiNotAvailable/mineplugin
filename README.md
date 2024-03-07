@@ -14,10 +14,11 @@ That is when this web-based tool comes in, for developers to build Minecraft plu
 
 ## How does it work?
 - **Frontend** - In the frontend, there are only two buttons - **Build** and **Download**, and a code editor
+- **Database** - Use MongoDB to store users and plugins data
 - **Cloud services**
   - **AWS S3 Bucket** - To store the files (source code, config files...)
   - **AWS CodeBuild** - Compile the code and generate target files **on the cloud**
-  - **API Gateway** - Communications between the frontend and the cloud
+  - **API Gateway** - Communications between the frontend, database and the cloud
   - **Lambda** - Cloud functions that attached to REST APIs and access the cloud services (e.g. S3, CodeBuild)
 - **Communication**
   1. Every 5 seconds, the React frontend will **check** if the building is ongoing
@@ -29,5 +30,4 @@ That is when this web-based tool comes in, for developers to build Minecraft plu
   3. Download - Get the file content from S3
 
 ## What's next?
-- **User login system** - The tool is now available for only one user. So the next step is to make it accessable for multiple people at the same time.
 - **Blockly** - To make it user-friendly for wider target audience, even people don't know how to code can build plugins.
