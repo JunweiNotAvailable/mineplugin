@@ -107,7 +107,7 @@ const MarkdownEditor: React.FC<Props> = React.memo(({ source, setSource }) => {
       <div className="flex items-center justify-between">
         <div>
           <button className={`md-editor-button ${mode === 'write' ? ' bg-gray-100' : ''} mr-2 hover:bg-gray-100`} style={{ color: mode === 'write' ? '#444' : '#888' }} onClick={() => setMode('write')}>Write</button>
-          <button className={`md-editor-button ${mode === 'preview' ? ' bg-gray-100' : ''} hover:bg-gray-100`} style={{ color: mode === 'preview' ? '#444' : '#888' }} onClick={() => setMode('preview')}>Preview</button>
+          <button className={`md:mt-0 mt-1 md-editor-button ${mode === 'preview' ? ' bg-gray-100' : ''} hover:bg-gray-100`} style={{ color: mode === 'preview' ? '#444' : '#888' }} onClick={() => setMode('preview')}>Preview</button>
         </div>
         {mode === 'write' && <div className={`action-bar`}>
           <button className="hover:bg-gray-100" onClick={() => insertMarkdownFormat('heading')}><FontAwesomeIcon icon={faHeading} /></button>

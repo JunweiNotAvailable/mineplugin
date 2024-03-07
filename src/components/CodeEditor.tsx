@@ -1,5 +1,5 @@
-import { Editor, Monaco } from '@monaco-editor/react'
-import React, { useEffect, useState } from 'react'
+import { Editor } from '@monaco-editor/react'
+import React from 'react'
 
 interface Props {
   code: string
@@ -12,7 +12,7 @@ const CodeEditor: React.FC<Props> = React.memo(( props ) => {
       className='plugin-editor'
       height={'100%'}
       width={'100%'}
-      theme='vs-light'
+      theme='vs'
       defaultLanguage='java'
       value={props.code}
       onChange={text => props.setCode(text || '')}

@@ -204,22 +204,32 @@ const PluginOverview: React.FC<Props> = ({ profileUser, isAuthUser, authUser }) 
     <>
       {plugin ? <div className='py-8'>
         {/* header */}
-        <div className='flex items-center'>
-          <div className={`w-24 h-24 cursor-pointer relative rounded-2xl flex overflow-hidden${pluginImageUrl ? '' : ' bg-gray-200'} items-center justify-center`} onClick={() => (pictureInputRef.current as any as HTMLElement).click()}>
-            {pluginImageUrl ? <img className='w-full h-full object-cover object-center' src={pluginImageUrl} /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
-            <input type='file' className='absolute' ref={pictureInputRef} style={{ width: '0', height: '0' }} accept="image/*" onInput={changePicture} />
+        <div className='flex md:items-center md:flex-row flex-col'>
+          <div className='flex justify-between items-center'>
+            <div className={`w-24 h-24 cursor-pointer relative rounded-2xl flex overflow-hidden${pluginImageUrl ? '' : ' bg-gray-200'} items-center justify-center`} onClick={() => (pictureInputRef.current as any as HTMLElement).click()}>
+              {pluginImageUrl ? <img className='w-full h-full object-cover object-center' src={pluginImageUrl} /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
+              <input type='file' className='absolute' ref={pictureInputRef} style={{ width: '0', height: '0' }} accept="image/*" onInput={changePicture} />
+            </div>
+            {isEdittingPlugin ? <div className='w-40 md:hidden flex text-sm h-full py-2'>
+              <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-secondary py-1 text-primary hover:text-primary-hover'>Cancel</button>
+              <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2 disabled:bg-secondary' disabled={isUpdating}>{isUpdating ? <Spinner size={14} color='#fff' /> : 'Save'}</button>
+            </div> : <div className='w-32 md:hidden flex flex-col text-sm h-full py-2'>
+              <button onClick={download} className='main-button py-1 flex items-center justify-center disabled:py-2 disabled:bg-secondary' disabled={isDownloading}>{isDownloading ? <Spinner size={14} color='#fff' /> : <><span className='w-3 mr-2'><Download color='#fff' /></span>Download</>}</button>
+              {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
+            </div>}
           </div>
-          <div className='flex-1 min-w-0 ml-6 mr-4 py-2 flex flex-col'>
+          <div className='flex-1 min-w-0 md:ml-6 mt-2 md:mt-0 mr-4 py-2 flex flex-col'>
             {isEdittingPlugin ?
               <input placeholder='Plugin name' className='main-input w-1/2' value={tempName} onInput={(e: React.ChangeEvent<HTMLInputElement>) => setTempName(e.target.value)} />
-              : <div className='text-xl font-bold flex items-center'>{plugin.name}<span className='ml-4 text-base font-light'>{plugin.version}</span>{(isAuthUser && !isEdittingPlugin) && <i onClick={() => setIsEdittingPlugin(true)} className='fa-solid fa-pen text-gray-400 ml-4 cursor-pointer text-sm' />}</div>}
-            <div className='text-sm mt-1 font-light text-gray-400'>Last Update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'Not update yet'}</div>
-            <div className='text-sm mt-1 font-light text-gray-400'>Total downloads: {plugin.downloads}</div>
+              : <div className='text-lg font-bold flex items-center'>{plugin.name}<span className='ml-4 text-base font-light'>{plugin.version}</span>{(isAuthUser && !isEdittingPlugin) && <i onClick={() => setIsEdittingPlugin(true)} className='fa-solid fa-pen text-gray-400 ml-4 cursor-pointer text-sm' />}</div>}
+            <div className='text-xs mt-1 font-light text-gray-400'>Last Update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'Not update yet'}</div>
+            <div className='text-xs mt-1 font-light text-gray-400'>Total downloads: {plugin.downloads}</div>
           </div>
-          {isEdittingPlugin ? <div className='w-40 flex text-sm h-full py-2'>
+          {/* download & code */}
+          {isEdittingPlugin ? <div className='w-40 hidden md:flex text-sm h-full py-2'>
             <button onClick={() => setIsEdittingPlugin(false)} className='flex-1 border border-secondary py-1 text-primary hover:text-primary-hover'>Cancel</button>
             <button onClick={updatePlugin} className='main-button flex-1 py-1 flex items-center justify-center ml-2 disabled:bg-secondary' disabled={isUpdating}>{isUpdating ? <Spinner size={14} color='#fff' /> : 'Save'}</button>
-          </div> : <div className='w-32 flex flex-col text-sm h-full py-2'>
+          </div> : <div className='w-32 hidden md:flex flex-col text-sm h-full py-2'>
             <button onClick={download} className='main-button py-1 flex items-center justify-center disabled:py-2 disabled:bg-secondary' disabled={isDownloading}>{isDownloading ? <Spinner size={14} color='#fff' /> : <><span className='w-3 mr-2'><Download color='#fff' /></span>Download</>}</button>
             {isAuthUser && <button onClick={() => navigate(`/${username}/${pluginId}/dev`)} className='border border-primary py-1 mt-2 text-primary hover:border-primary-hover hover:text-primary-hover'><i className='fa-solid fa-code text-xs w-3 mr-2' />Code</button>}
           </div>}

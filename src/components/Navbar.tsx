@@ -3,8 +3,14 @@ import Logo from '../asset/svgs/Logo'
 import './style.css'
 import { AppProps } from '../utils/Interfaces'
 import { logo, storageUsername } from '../utils/Constants'
+import { ToggleState } from '@iwbam/react-ez'
+import React from 'react'
 
-const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
+interface Props extends AppProps {
+  sidebarOpened: ToggleState
+}
+
+const Navbar: React.FC<Props> = ({ user, setUser, sidebarOpened }) => {
 
   const navigate = useNavigate();
 
@@ -18,12 +24,15 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
   }
 
   return (
-    <header className='navbar border-b border-gray-100 z-40'>
+    <header className='navbar border-b border-gray-100 z-40 md:px-8 px-4'>
       {/* logo */}
-      <Link className='logo' to={'/'}>
-        <div style={{ width: 28, display: 'flex', alignItems: 'center', marginRight: '.5rem' }}><Logo /></div>
-        {logo}
-      </Link>
+      <div className='flex items-center'>
+        <button className='sidebar-toggle md:hidden block text-gray-500' onClick={() => sidebarOpened.toggle()}><i className='fa-solid fa-bars p-2 mr-4' /></button>
+        <Link className='logo' to={'/'}>
+          <div style={{ width: 28, display: 'flex', alignItems: 'center', marginRight: '.5rem' }}><Logo /></div>
+          <div className='hidden md:block'>{logo}</div>
+        </Link>
+      </div>
       {/* nav menu */}
       {user === undefined ? <></>
         : user === null ?
@@ -36,4 +45,4 @@ const Navbar: React.FC<AppProps> = ({ user, setUser }) => {
   )
 }
 
-export default Navbar
+export default React.memo(Navbar)

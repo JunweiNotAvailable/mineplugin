@@ -114,19 +114,21 @@ const Plugins: React.FC<Props> = React.memo(({ profileUser, isAuthUser, authUser
               {urls[plugin.name] ? <img className='w-full h-full object-cover object-center' src={urls[plugin.name]} /> : <div className='w-1/2'><Pickaxe color='#a0a0a0' /></div>}
             </div>
             {/* name & description */}
-            <div className='ml-4 flex-1 min-w-0 cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
-              <div className=''>{plugin.name}<span className='text-sm text-gray-400 ml-4 font-light'>{plugin.version}</span></div>
-              <div className='overflow-hidden whitespace-nowrap text-ellipsis text-sm text-gray-400 font-light'>{plugin.description}</div>
-            </div>
-            <div className='flex flex-col items-end cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
-              <div className='text-xs text-gray-400 font-light'>Last update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'No update'}</div>
-              <div className='text-xs text-gray-400 font-light'>Downloads: {plugin.downloads}</div>
+            <div className='flex md:items-center items-start flex-1 min-w-0 md:flex-row flex-col overflow-hidden *:*:text-ellipsis'>
+              <div className='pl-4 flex-1 min-w-0 cursor-pointer w-full' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
+                <div className='text-nowrap text-sm md:text-base'>{plugin.name}<span className='text-sm text-gray-400 ml-4 font-light'>{plugin.version}</span></div>
+                <div className='overflow-hidden whitespace-nowrap text-ellipsis text-xs w-full md:text-sm text-gray-400 font-light'>{plugin.description}</div>
+              </div>
+              <div className='pl-4 md:ml-0 flex flex-col md:items-end cursor-pointer' onClick={() => navigate(`/${profileUser.username}/${plugin.name}`)}>
+                <div className='md:block hidden text-xs text-gray-400 font-light'>Last update: {plugin.lastUpdate ? getFormattedDate(plugin.lastUpdate) : 'No update'}</div>
+                <div className='text-xs text-gray-400 font-light'>Downloads: {plugin.downloads}</div>
+              </div>
             </div>
             {/* options */}
             {isAuthUser && <div className='flex items-center justify-center ml-2'>
               {/* <button onClick={() => star(plugin)} className='w-7 h-7 rounded-full hover:bg-gray-100'><i className={`fa-star text-sm${(plugin.starred && plugin.starred.includes(authUser?.username || '')) ? ' fa-solid text-yellow-400' : ' fa-regular text-gray-400'}`} /></button> */}
-              <button onClick={() => navigate(`/${profileUser.username}/${plugin.name}/dev`)} className='w-7 h-7 ml-2 rounded-full hover:bg-gray-100'><i className={`fa-solid fa-code text-sm text-gray-400`} /></button>
-              <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 ml-2 rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-sm text-gray-400' /></button>
+              <button onClick={() => navigate(`/${profileUser.username}/${plugin.name}/dev`)} className='w-7 h-7 ml-1 text-xs md:text-sm rounded-full hover:bg-gray-100'><i className={`fa-solid fa-code text-gray-400`} /></button>
+              <button onClick={() => setDeletingPlugin(plugin)} className='w-7 h-7 ml-1 text-xs md:text-sm rounded-full hover:bg-gray-100'><i className='fa-solid fa-trash text-gray-400' /></button>
             </div>}
           </div>)}
         </div>

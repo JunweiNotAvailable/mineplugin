@@ -15,7 +15,7 @@ const Landing = () => {
               <source src={require('./river.mp4')} />
             </video>
           </div>
-          <motion.div className='rounded-xl absolute top-1/2 -translate-y-1/2 p-8 max-w-xl' style={{ background: '#fffa' }} initial={{ opacity: 0, left: 32 }} animate={{ left: inView ? 64 : 32, opacity: inView ? 1 : 0 }} transition={{ duration: .5, ease: 'linear', delay: .3 }}>
+          <motion.div className='rounded-xl md:absolute top-1/2 md:-translate-y-1/2 px-8 py-16 md:py-8 max-w-xl' style={{ background: '#fffa' }} initial={{ opacity: 0, left: 32 }} animate={{ left: inView ? 64 : 32, opacity: inView ? 1 : 0 }} transition={{ duration: .5, ease: 'linear', delay: .3 }}>
             <div className='font-bold text-4xl'>Build Minecraft plugins in anywhere, at anytime</div>
             <div className='mt-4'>MinePlugin is a free tool to code, build and download Minecraft plugins all in one place.</div>
             <button className='main-button mt-8 text-lg py-1 px-8' onClick={() => navigate('/login')}>Get started</button>

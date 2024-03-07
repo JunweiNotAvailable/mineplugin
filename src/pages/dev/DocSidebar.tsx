@@ -32,7 +32,7 @@ const DocSidebar: React.FC<FetchProps> = ({ fetchLink, parentDir }) => {
   }, [dirs]);
 
   return (
-    <aside className='w-80 box-border px-4 pb-4 sticky top-0 shadow scroller'>
+    <aside className='hidden md:block w-80 box-border px-4 pb-4 sticky top-0 shadow scroller'>
       <div className='text-sm font-bold mt-4 flex items-center justify-between'>
         <div>Bukkit Resources</div>
         <button className='text-xs text-gray-500' onClick={() => window.open('https://hub.spigotmc.org/javadocs/bukkit/')}>Spigit MC<i className='ml-2 fa-solid fa-arrow-up-right-from-square' /></button>

@@ -14,12 +14,14 @@ import { config } from './utils/Config';
 import PageNotFound from './pages/pagenotfound/PageNotFound';
 import NewPlugin from './pages/new/NewPlugin';
 import PluginDev from './pages/dev/PluginDev';
+import { useToggle } from '@iwbam/react-ez';
 
 function App() {
 
   const [user, setUser] = useState<User | undefined | null>(undefined);
+  const sidebarOpened = useToggle(false);
   const appProps = {
-    user, setUser
+    user, setUser, sidebarOpened
   };
 
   // Load the current user

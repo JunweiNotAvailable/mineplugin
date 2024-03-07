@@ -3,20 +3,25 @@ import { AppProps, Plugin, User } from '../../utils/Interfaces'
 import { useNavigate, useParams } from 'react-router-dom';
 import { config } from '../../utils/Config';
 import PluginsIcon from '../../asset/svgs/PluginsIcon';
-import { codeSet, extractPluginName } from '../../utils/Code';
+import { extractPluginName } from '../../utils/Code';
 import CodeEditor from '../../components/CodeEditor';
-import { replaceLast } from '../../utils/Functions';
 import Logo from '../../asset/svgs/Logo';
 import { build, downloadFile, updateSpigotFiles } from '../../utils/CodeBuild';
 import DocSidebar from './DocSidebar';
+import { Sidebar } from '../profile/Profile';
+import { getImageUrl } from '../../utils/Functions';
+import { useEventListener } from '@iwbam/react-ez';
 
-const PluginDev: React.FC<AppProps> = ({ user }) => {
+const PluginDev: React.FC<AppProps> = ({ user, setUser, sidebarOpened }) => {
 
   const navigate = useNavigate();
   const logsContainerRef = useRef(null);
   const saveBtnRef = useRef(null);
   let timerRef = useRef<NodeJS.Timer | null>(null);
   const { username, pluginId } = useParams();
+  const [pictureUrl, setPictureUrl] = useState<string>('');
+  const [recentPlugins, setRecentPlugins] = useState<Plugin[]>([]);
+  const [urls, setUrls] = useState<any>({});
   const [plugin, setPlugin] = useState<Plugin | null | undefined>(undefined);
   const [owner, setOwner] = useState<User | null | undefined>(undefined);
   const [code, setCode] = useState('');
@@ -29,18 +34,14 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
   // console
   const [isConsoleOpened, setIsConsoleOpened] = useState(false);
   const [logs, setLogs] = useState<any[]>([]);
-  
+ 
   // Handle keyboard event
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 's' && e.ctrlKey) {
-        e.preventDefault();
-        (saveBtnRef.current as unknown as HTMLElement).click();
-      }
+  useEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 's' && e.ctrlKey) {
+      e.preventDefault();
+      (saveBtnRef.current as unknown as HTMLElement).click();
     }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  });
 
   // Get the data from params
   useEffect(() => {
@@ -58,11 +59,20 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
             return;
           }
           setOwner(userData);
+          // Load picture if user exists
+          if (userData.picture) {
+            const url = await getImageUrl(`src/${userData.username}/${userData.picture}`);
+            setPictureUrl(url);
+          }
           // Get plugin
           const pluginRes = await fetch(`${config.api.mongodb}/get-single-item?database=mineplugin&collection=plugins&keys=['owner', 'name']&values=['${username}', '${pluginId}']`);
           const pluginData = await pluginRes.json();
           setPlugin(pluginData);
           setCode(pluginData.code);
+           // Load recent plugins
+          const pluginsRes = (await fetch(`${config.api.mongodb}/query-items?database=mineplugin&collection=plugins&keys=['owner']&values=['${username}']&page=1&per_page=5&sort_by=lastUpdate`, { headers: { 'Content-Type': 'application/json' } }));
+          const data = await pluginsRes.json();
+          setRecentPlugins(data);
         } catch (error) {
           navigate('/pagenotfound');
           console.log(error);
@@ -71,6 +81,21 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     })();
     document.title = `${pluginId} | MinePlugin`;
   }, [user, pluginId]);
+
+  
+  // Load images when plugins loaded
+  useEffect(() => {
+    (async () => {
+      let newUrls: any = {};
+      for (const plugin of recentPlugins) {
+        if (plugin.picture) {
+          const url = await getImageUrl(`src/${user?.username}/${plugin.name}/${plugin.picture}`);
+          newUrls[plugin.name] = url;
+        }
+      }
+      setUrls(newUrls);
+    })();
+  }, [recentPlugins]);
 
   // Check building status every 5 seconds
   useEffect(() => {
@@ -190,14 +215,14 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
     plugin ?
       <div className='flex-1 flex flex-col scroller'>
         {/* header */}
-        <div className='flex items-center justify-between py-4 px-8 shadow sticky top-0 z-10'>
-          <div className='flex items-center font-bold cursor-pointer' onClick={() => navigate(`/${username}/${pluginId}`)}>
+        <div className='flex items-center justify-end md:justify-between py-4 px-8 shadow sticky top-0 z-10'>
+          <div className='hidden md:flex items-center font-bold cursor-pointer' onClick={() => navigate(`/${username}/${pluginId}`)}>
             <div className='w-4 mr-2'><PluginsIcon /></div>
             {plugin.name}
           </div>
           {/* buttons */}
-          <div className='flex text-sm'>
-            <div className='text-sm font-bold text-gray-300 flex items-center px-4'>
+          <div className='flex flex-col md:flex-row text-xs md:text-sm'>
+            <div className='text-sm font-bold text-gray-300 flex items-center md:px-4 mb-1 md:mb-0'>
               {(isBuilding || isChecking || isSaving || isGeneratingFiles) && <div className='w-6 mr-2'><Logo loading /></div>}
               {
                 isChecking ? 'Checking building status...'
@@ -207,13 +232,27 @@ const PluginDev: React.FC<AppProps> = ({ user }) => {
                 : ''
               }
             </div>
-            <button onClick={saveCode} ref={saveBtnRef} className='py-1 px-4 border border-primary hover:border-primary-hover disabled:text-gray-300 disabled:border-gray-300' disabled={code === plugin.code || isBuilding || isChecking || isSaving || isGeneratingFiles}>Save</button>
-            <button onClick={generateAndBuild} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || plugin.alreadyBuilt}>Build</button>
-            <button onClick={download} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || isDownloading}>Download</button>
+            <div className='flex items-center'>
+              <button onClick={saveCode} ref={saveBtnRef} className='py-1 px-4 border border-primary hover:border-primary-hover disabled:text-gray-300 disabled:border-gray-300' disabled={code === plugin.code || isBuilding || isChecking || isSaving || isGeneratingFiles}>Save</button>
+              <button onClick={generateAndBuild} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || plugin.alreadyBuilt}>Build</button>
+              <button onClick={download} className='py-1 px-4 ml-2 main-button disabled:bg-gray-300' disabled={isBuilding || isChecking || isSaving || isGeneratingFiles || isDownloading}>Download</button>
+            </div>
           </div>
         </div>
         {/* dev body */}
         <main className='flex flex-1 scroller'>
+          <Sidebar 
+            hiddenInDesktop
+            user={user}
+            setUser={setUser}
+            sidebarOpened={sidebarOpened}
+            isAuthUser={true}
+            profileUser={user as User}
+            pictureUrl={pictureUrl}
+            recentPlugins={recentPlugins}
+            urls={urls}
+            option={''}
+          />
           <DocSidebar fetchLink='https://api.github.com/repos/Bukkit/Bukkit/contents/src/main/java/org/bukkit' parentDir='' />
           <div className='flex-1 p-1 min-w-0 flex flex-col'>
             <div className='text-sm px-1'>{extractPluginName(code)}.java</div>

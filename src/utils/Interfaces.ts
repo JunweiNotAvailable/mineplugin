@@ -1,8 +1,10 @@
+import { ToggleState } from "@iwbam/react-ez"
 import React from "react"
 
 export interface AppProps {
   user: User | undefined | null
   setUser: React.Dispatch<React.SetStateAction<User | undefined | null>>
+  sidebarOpened: ToggleState
 }
 
 export interface User {
