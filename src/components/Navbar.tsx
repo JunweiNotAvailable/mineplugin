@@ -27,7 +27,7 @@ const Navbar: React.FC<Props> = ({ user, setUser, sidebarOpened }) => {
     <header className='navbar border-b border-gray-100 z-40 md:px-8 px-4'>
       {/* logo */}
       <div className='flex items-center'>
-        <button className='sidebar-toggle md:hidden block text-gray-500' onClick={() => sidebarOpened.toggle()}><i className='fa-solid fa-bars p-2 mr-4' /></button>
+        {user && <button className='sidebar-toggle md:hidden block text-gray-500' onClick={() => sidebarOpened.toggle()}><i className='fa-solid fa-bars p-2 mr-4' /></button>}
         <Link className='logo' to={'/'}>
           <div style={{ width: 28, display: 'flex', alignItems: 'center', marginRight: '.5rem' }}><Logo /></div>
           <div className='hidden md:block'>{logo}</div>
