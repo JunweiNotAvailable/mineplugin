@@ -88,19 +88,15 @@ const SignUp: React.FC<Props> = ({ user, setUser, ...props }) => {
       nickname: nickname,
       plugins: [],
     };
-    try {
-      // await fetch(`${config.api.mongodb}/put-single-item`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     database: 'mineplugin',
-      //     collection: 'users',
-      //     value: newUser
-      //   }),
-      // });
-    } catch (error) {
-      console.log('Failed creating user')
-    }
+    await fetch(`${config.api.mongodb}/put-single-item`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        database: 'mineplugin',
+        collection: 'users',
+        value: newUser
+      }),
+    });
   }
 
   return (
